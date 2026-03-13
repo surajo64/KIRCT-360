@@ -11,6 +11,7 @@ import EducatorSidebar from './components/educator/SideBar'
 
 // Public Pages Imports
 import Home from './pages/Home'
+import Scroller from './components/Scroller'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Team from './pages/tearm'
@@ -77,6 +78,7 @@ const App = () => {
   return (
     <div className='bg-white text-gray-800 text-sm'>
       <ToastContainer />
+      <Scroller />
 
       {isEducatorRoute ? (
         <div className="bg-gray-50 min-h-screen flex flex-col">
