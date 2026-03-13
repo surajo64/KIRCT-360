@@ -4,7 +4,7 @@ import { AppContext } from "../context/AppContext";
 import Loading from "../components/loading";
 import { assets } from "../assets/assets";
 import humanizeDuration from "humanize-duration";
-import Rating from "../components/rating";
+import Rating from "../components/Rating";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ReactPlayer from "react-player";
