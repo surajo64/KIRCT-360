@@ -269,7 +269,7 @@ export const purchaseCourse = async (req, res) => {
         email: user.email,
         amount,
         reference,
-        callback_url: "http://localhost:5173/payment-callback", // optional
+        callback_url: "https://kirctrust.org/payment-callback", // optional
         metadata: {
           courseId,
           userId,
