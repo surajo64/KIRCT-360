@@ -124,65 +124,103 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between px-4 md:px-8 border-b py-3 shadow-sm sticky top-0 bg-white/90 backdrop-blur-md z-50 transition-all duration-300">
-        {/* Logo */}
-        <h1
+      <div className="flex items-center justify-between px-6 md:px-10 border-b border-gray-100 py-4 shadow-sm sticky top-0 bg-white/80 backdrop-blur-xl z-50 transition-all duration-300">
+        {/* Logo Section */}
+        <div 
           onClick={() => navigate("/")}
-          className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 text-transparent bg-clip-text cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 cursor-pointer group"
         >
-          KIRCT LMS
-        </h1>
+          <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-200 group-hover:scale-105 transition-transform duration-300">
+            <h1 className="text-white font-black text-xl leading-none">K</h1>
+          </div>
+          <div>
+            <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
+              KIRCT <span className="text-blue-600 font-medium">LMS</span>
+            </h1>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none">Admin Portal</p>
+          </div>
+        </div>
 
         {/* User Menu */}
-        <div className="hidden md:flex items-center gap-3 text-gray-700 font-medium relative">
-          {/* Trigger */}
-          <div
-            className="flex items-center gap-2 cursor-pointer hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors"
-            onClick={() => setMenu((prev) => !prev)}
-          >
-            <img src={adminData?.image || assets.profile_img} alt="Profile" className="w-10 h-10 rounded-full border-2 border-blue-500 object-cover" />
-
-            <p className="truncate max-w-[150px]">
-              Hi! {adminData?.name ? adminData.name.split(" ")[0] : "Educator"}
-            </p>
+        <div className="flex items-center gap-4">
+          {/* Notification Icon */}
+          <div className="hidden sm:flex p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full cursor-pointer transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
           </div>
 
-          {/* Dropdown */}
-          {menu && (
-            <div className="absolute top-12 right-0 bg-white border border-gray-100 rounded-xl shadow-xl w-48 animate-fadeIn overflow-hidden z-50">
-              <ul className="flex flex-col py-2 text-sm text-gray-600">
-                <li
-                  onClick={() => {
-                    setOpen(true);
-                    setEditMode(false);
-                    setMenu(false);
-                  }}
-                  className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
-                >
-                  Profile
-                </li>
-                <li
-                  onClick={() => {
-                    setChangePassword(true),
-                      setMenu(false)
-                  }}
-                  className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors">
-                  Change Password
-                </li>
-                <li>
-                  <button
+          {/* Trigger */}
+          <div
+            className="flex items-center gap-3 cursor-pointer bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 px-3 py-1.5 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md relative"
+            onClick={() => setMenu((prev) => !prev)}
+          >
+            <div className="relative">
+              <img 
+                src={adminData?.image || assets.profile_img} 
+                alt="Profile" 
+                className="w-9 h-9 rounded-xl border-2 border-white object-cover shadow-sm" 
+              />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+            </div>
+
+            <div className="hidden lg:block text-left">
+              <p className="text-xs font-bold text-[#0f172a] leading-tight">
+                {adminData?.name || "Educator"}
+              </p>
+              <p className="text-[10px] text-gray-500 font-medium capitalize">{adminData?.role || 'Staff'}</p>
+            </div>
+            
+            <svg 
+              className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${menu ? 'rotate-180' : ''}`}
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+
+            {/* Dropdown */}
+            {menu && (
+              <div className="absolute top-full mt-3 right-0 bg-white border border-gray-100 rounded-2xl shadow-2xl w-60 animate-fadeIn overflow-hidden z-50 py-2">
+                <div className="px-4 py-3 border-b border-gray-50 mb-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Account</p>
+                </div>
+                <ul className="flex flex-col text-sm text-gray-600 px-2 space-y-1">
+                  <li
                     onClick={() => {
-                      logout();
+                      setOpen(true);
+                      setEditMode(false);
                       setMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 hover:text-blue-600 rounded-xl cursor-pointer transition-all duration-200"
                   >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span className="font-semibold">My Profile</span>
+                  </li>
+                  <li
+                    onClick={() => {
+                      setChangePassword(true),
+                        setMenu(false)
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 hover:text-blue-600 rounded-xl cursor-pointer transition-all duration-200"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span className="font-semibold">Security</span>
+                  </li>
+                  <div className="h-px bg-gray-50 my-1 mx-2"></div>
+                  <li>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl cursor-pointer transition-all duration-200"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                      <span className="font-semibold">Sign Out</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -391,7 +429,7 @@ const Navbar = () => {
                   onClick={() => setEditMode(true)}
                   className="px-8 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition shadow-lg"
                 >
-                  Edit Profile
+                  edit profile
                 </button>
               )}
             </div>

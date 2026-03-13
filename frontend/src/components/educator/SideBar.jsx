@@ -42,19 +42,24 @@ const SideBar = () => {
   const menuItems = role === 'admin' ? adminMenuItems : educatorMenuItems;
 
   return (
-    <div className="h-screen w-64 bg-white text-gray-800 shadow-md flex flex-col">
-      <div className="p-4 text-xl font-bold border-b border-gray-200">
-        <span className="text-blue-600 capitalize">{role}</span> Panel
+    <div className="h-screen w-64 bg-[#0f172a] text-slate-300 shadow-2xl flex flex-col border-r border-slate-800">
+      <div className="p-6 flex flex-col gap-1 border-b border-slate-800 bg-[#1e293b]/50">
+        <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">{role} Panel</span>
+        <h1 className="text-xl font-bold text-white">Administrator</h1>
       </div>
 
-      <nav className="flex-1 p-2 space-y-0 text-gray-800">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         {menuItems.map((item) => (
           <NavItem key={item.label} icon={item.icon} label={item.label} to={item.to} />
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <h1 className="font-semibold text-gray-600">KIRCT LMS</h1>
+      <div className="p-6 border-t border-slate-800 bg-[#1e293b]/30">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-sm font-semibold text-slate-400">System Online</span>
+        </div>
+        <p className="mt-1 text-[10px] text-slate-500 uppercase font-medium tracking-tighter">Powered by KIRCT LMS v3.0</p>
       </div>
     </div>
   );
@@ -66,14 +71,20 @@ const NavItem = ({ icon, label, to }) => {
       to={to}
       end={to === '/educator' || to === '/admin'}
       className={({ isActive }) =>
-        `flex items-center gap-3 w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${isActive
-          ? 'bg-gradient-to-r from-blue-50 to-white text-blue-600 border-r-4 border-blue-600 shadow-sm'
-          : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600 hover:translate-x-2'
+        `flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 group ${isActive
+          ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40 translate-x-1'
+          : 'text-slate-400 hover:bg-slate-800 hover:text-white hover:translate-x-1'
         }`
       }
     >
-      {icon}
-      <span className="text-base md:text-lg">{label}</span>
+      {({ isActive }) => (
+        <>
+          <div className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'}`}>
+            {icon}
+          </div>
+          <span className="font-semibold tracking-wide">{label}</span>
+        </>
+      )}
     </NavLink>
   );
 };
