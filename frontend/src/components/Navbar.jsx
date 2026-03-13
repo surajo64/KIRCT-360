@@ -313,18 +313,18 @@ const Navbar = () => {
         {/* LEFT SIDE: Logo + KIRCT */}
         <div
           onClick={() => navigate("/")}
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-2 xl:gap-3 cursor-pointer group shrink-0"
         >
           <img
             src={logo}
             alt="KIRCT Logo"
-            className="w-12 h-12 bg-white rounded-lg p-1 transition-transform group-hover:scale-110"
+            className="w-10 h-10 xl:w-12 xl:h-12 bg-white rounded-lg p-1 transition-transform group-hover:scale-110"
           />
-          <span className="text-xl font-bold text-blue-800 leading-tight">KIRCT</span>
+          <span className="text-lg xl:text-xl font-bold text-blue-800 leading-tight hidden 2xl:block">KIRCT</span>
         </div>
 
         {/* RIGHT SIDE: Desktop Menu */}
-        <div ref={dropdownRef} className="hidden xl:flex items-center space-x-3">
+        <div ref={dropdownRef} className="hidden lg:flex items-center lg:gap-0.5 xl:gap-2 2xl:gap-3">
           {menuItems.map((item, index) =>
             item.name === "REDCap" ? (
               <motion.div
@@ -337,7 +337,7 @@ const Navbar = () => {
                   textShadow: "0px 0px 8px rgba(255,255,255,0.8)",
                 }}
                 transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                className="relative"
+                className="relative hidden lg:block"
               >
                 <Link
                   to={item.path}
@@ -366,7 +366,7 @@ const Navbar = () => {
                 key={index}
                 to={item.path}
                 className={({ isActive }) =>
-                  `px-3 py-3 text-sm font-semibold border-b-2 transition-all ${isActive
+                  `px-1.5 xl:px-3 py-3 text-[12px] xl:text-[13px] 2xl:text-sm font-semibold border-b-2 transition-all shrink-0 ${isActive
                     ? "border-blue-600 text-blue-700"
                     : "border-transparent hover:text-blue-700 hover:border-blue-400"
                   }`
@@ -381,10 +381,10 @@ const Navbar = () => {
                 onMouseEnter={() => handleDropdownEnter(item.name)}
                 onMouseLeave={handleDropdownLeave}
               >
-                <button className="px-2 py-1 flex items-center text-sm font-semibold hover:text-blue-600 transition-all">
+                <button className="px-1 xl:px-2 py-1 flex items-center text-[12px] xl:text-[13px] 2xl:text-sm font-semibold hover:text-blue-600 transition-all whitespace-nowrap">
                   {item.name}
                   <svg
-                    className={`ml-1 w-3 h-3 transition-transform ${activeDropdown === item.name ? "rotate-180" : ""
+                    className={`ml-0.5 w-3 h-3 transition-transform ${activeDropdown === item.name ? "rotate-180" : ""
                       }`}
                     fill="none"
                     stroke="currentColor"
@@ -430,7 +430,7 @@ const Navbar = () => {
         </div>
 
         {/* User Account / Login */}
-        <div className="hidden xl:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-2 xl:gap-4 shrink-0">
           {token ? (
             <div className='flex items-center gap-2 cursor-pointer group relative'>
               <img className='w-8 h-8 rounded-full' src={userData?.image || assets.profile_pic} alt="" />
@@ -447,7 +447,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => { setIsRegistering(false); setShowAuthModal(true); }}
-              className='bg-blue-600 text-white px-8 py-2.5 rounded-full font-light hidden md:block hover:bg-blue-700 transition'
+              className='bg-blue-600 text-white px-4 xl:px-8 py-2 md:py-2.5 rounded-full font-bold text-[12px] xl:text-sm 2xl:text-base hover:bg-blue-700 transition'
             >
               Login
             </button>
@@ -457,7 +457,7 @@ const Navbar = () => {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setShowMenu(true)}
-          className="xl:hidden p-2 hover:bg-blue-700 rounded-lg transition-colors"
+          className="lg:hidden p-2 hover:bg-blue-700 rounded-lg transition-colors text-blue-900"
         >
           <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
