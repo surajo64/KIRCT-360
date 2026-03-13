@@ -3,11 +3,11 @@ import JobApplication from "../models/JobApplication.js";
 import JobVacancy from "../models/JobVacancy.js";
 import News from "../models/News.js";
 import { v2 as cloudinary } from "cloudinary";
-import { 
-    sendSubmissionEmail, 
-    sendInterviewEmail, 
-    sendRejectionEmail, 
-    sendApprovalEmail 
+import {
+    sendSubmissionEmail,
+    sendInterviewEmail,
+    sendRejectionEmail,
+    sendApprovalEmail
 } from "../config/emailUtils.js";
 
 // --- Internship Logic ---
@@ -61,7 +61,7 @@ export const getInternships = async (req, res) => {
     }
 };
 
-// Admin: Update Internship Status
+// Admin: Update Internship Status 
 export const updateInternshipStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -104,13 +104,13 @@ export const applyJob = async (req, res) => {
         } = req.body;
 
         // Check for existing job application with same email/phone AND same position
-        const existingJobApp = await JobApplication.findOne({ 
+        const existingJobApp = await JobApplication.findOne({
             $and: [
                 { $or: [{ email }, { phone }] },
                 { position }
-            ] 
+            ]
         });
-        
+
         if (existingJobApp) {
             return res.status(400).json({ success: false, message: `You have already applied for the ${position} position.` });
         }
