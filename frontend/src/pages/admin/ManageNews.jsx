@@ -26,7 +26,7 @@ const ManageNews = () => {
 
     const fetchNews = async () => {
         try {
-            const { data } = await axios.get(backendUrl + '/api/admin/getNews')
+            const { data } = await axios.get(backendUrl + '/api/admin/getNews', { headers: { atoken } })
             if (data.success) {
                 setNewsList(data.news)
             } else {

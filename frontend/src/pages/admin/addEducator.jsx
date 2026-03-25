@@ -88,7 +88,7 @@ const AddEducator = () => {
         role,
         about,
         password,
-      });
+      }, { headers: { atoken } });
 
       if (data.success) {
         toast.success(data.message || "Registration successful!");
