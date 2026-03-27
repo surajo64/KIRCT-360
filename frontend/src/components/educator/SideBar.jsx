@@ -24,6 +24,7 @@ const adminMenuItems = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, to: '/admin-dashboard' },
   { label: 'Add Course', icon: <PlusCircle size={20} />, to: '/educator/add-course' },
   { label: 'All Courses', icon: <BookOpen size={20} />, to: '/educator/all-courses' },
+  { label: 'Questions', icon: <PlusCircle size={20} />, to: '/educator/add-quize' },
   { label: 'Student Enrolled', icon: <Users size={20} />, to: '/educator/all-student-enrolled' },
   { label: 'Add User', icon: <PlusCircle size={20} />, to: '/educator/register' },
   { label: 'Users', icon: <Users size={20} />, to: '/educator/educators' },

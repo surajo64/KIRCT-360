@@ -879,7 +879,7 @@ export const getFilteredEnrolledStudents = async (req, res) => {
 // API for Educator to update student progress manually
 export const updateStudentProgress = async (req, res) => {
   try {
-    const { userId, courseId, lectureId, markAsCompleted, isCourseCompleted } = req.body;
+    const { userId, courseId, lectureId, chapterId, markAsCompleted, isCourseCompleted } = req.body;
 
     // Find progress record
     let progress = await CourseProgress.findOne({ userId, courseId });
@@ -892,7 +892,29 @@ export const updateStudentProgress = async (req, res) => {
       });
     }
 
-    // Handle Lecture Progress
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    // ✅ Handle Chapter Progress (Bulk mark all lectures in a chapter)
+    if (chapterId) {
+      const chapter = course.courseContent.find(c => c.chapterId === chapterId);
+      if (chapter) {
+        chapter.chapterContent.forEach(lecture => {
+          if (markAsCompleted) {
+            if (!progress.lectureCompleted.includes(lecture.lectureId)) {
+              progress.lectureCompleted.push(lecture.lectureId);
+            }
+          } else {
+            // Unmark all in chapter
+            progress.lectureCompleted = progress.lectureCompleted.filter(id => id !== lecture.lectureId);
+          }
+        });
+      }
+    }
+
+    // ✅ Handle Single Lecture Progress
     if (lectureId) {
       if (markAsCompleted) {
         if (!progress.lectureCompleted.includes(lectureId)) {
@@ -904,27 +926,30 @@ export const updateStudentProgress = async (req, res) => {
       }
     }
 
-    // Handle Course Completion based on lectures
-    const course = await Course.findById(courseId);
-    if (course) {
+    // ✅ Handle Full Course Completion
+    if (isCourseCompleted) {
+      // Mark all lectures as completed
+      const allLectureIds = course.courseContent.flatMap(chapter => chapter.chapterContent.map(l => l.lectureId));
+      progress.lectureCompleted = [...new Set([...progress.lectureCompleted, ...allLectureIds])];
+      
+      progress.completed = true;
+      progress.quizPassed = true;
+      progress.quizTaken = true;
+      progress.quizScore = 100;
+    } else if (isCourseCompleted === false) {
+      progress.completed = false;
+      progress.quizPassed = false;
+    } else {
+      // Auto-update completion status based on lectures if not manually overriding
       const totalLectures = course.courseContent.reduce(
         (sum, chapter) => sum + chapter.chapterContent.length, 0
       );
 
-      // Auto-update completion status
       if (progress.lectureCompleted.length >= totalLectures) {
         progress.completed = true;
       } else {
-        // If manual override isn't forcing it to true, ensure it is false if not all lectures done
-        if (isCourseCompleted === undefined) {
-          progress.completed = false;
-        }
+        progress.completed = false;
       }
-    }
-
-    // Manual Override (if provided)
-    if (isCourseCompleted !== undefined) {
-      progress.completed = isCourseCompleted;
     }
 
     await progress.save();

@@ -117,6 +117,14 @@ const MyCourses = () => {
                         </span>
                       </label>
 
+                      {/* Quiz Button */}
+                      <button
+                        onClick={() => navigate(`/educator/add-quize?courseId=${course._id}`)}
+                        className="ml-3 px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs rounded-md shadow-sm"
+                      >
+                        Quiz
+                      </button>
+
                       {/* Update Button */}
                       <button
                         onClick={() => handleUpdateCourse(course)}

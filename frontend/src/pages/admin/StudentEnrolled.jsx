@@ -55,7 +55,7 @@ const StudentEnrolled = () => {
     }
   };
 
-  const handleProgressUpdate = async (lectureId, markAsCompleted) => {
+  const handleProgressUpdate = async ({ lectureId, markAsCompleted, chapterId, isCourseCompleted }) => {
     if (!selectedEnrollment) return;
     setIsUpdating(true);
     try {
@@ -63,27 +63,40 @@ const StudentEnrolled = () => {
         userId: selectedEnrollment.student._id,
         courseId: selectedEnrollment.courseId,
         lectureId,
-        markAsCompleted
+        chapterId,
+        markAsCompleted,
+        isCourseCompleted
       }, { headers: { atoken } });
 
       if (data.success) {
-        // Update local state
-        let updatedCompleted = [...selectedEnrollment.completedLectures];
-        if (markAsCompleted) {
-          updatedCompleted.push(lectureId);
-        } else {
-          updatedCompleted = updatedCompleted.filter(id => id !== lectureId);
-        }
-        setSelectedEnrollment({ ...selectedEnrollment, completedLectures: updatedCompleted });
+        // Update local state from response
+        const updatedLectures = data.progress.lectureCompleted;
+        const isFinished = data.progress.completed;
+
+        setSelectedEnrollment({
+          ...selectedEnrollment,
+          completedLectures: updatedLectures,
+          progress: isFinished ? "Completed" : "On Going",
+          quizPassed: data.progress.quizPassed,
+          quizTaken: data.progress.quizTaken,
+          quizScore: data.progress.quizScore
+        });
 
         // Update main list
         setStudents(students.map(s =>
           s.student._id === selectedEnrollment.student._id && s.courseId === selectedEnrollment.courseId
-            ? { ...s, completedLectures: updatedCompleted }
+            ? {
+              ...s,
+              completedLectures: updatedLectures,
+              progress: isFinished ? "Completed" : "On Going",
+              quizPassed: data.progress.quizPassed,
+              quizTaken: data.progress.quizTaken,
+              quizScore: data.progress.quizScore
+            }
             : s
         ));
 
-        toast.success("Progress Updated");
+        toast.success(isCourseCompleted ? "Course Marked Completed" : chapterId ? "Chapter Updated" : "Progress Updated");
       } else {
         toast.error(data.message);
       }
@@ -246,16 +259,43 @@ const StudentEnrolled = () => {
               <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-red-500">✕</button>
             </div>
 
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">Student: <span className="font-semibold text-gray-800">{selectedEnrollment.student.name}</span></p>
-              <p className="text-sm text-gray-600">Course: <span className="font-semibold text-gray-800">{selectedEnrollment.courseTitle}</span></p>
+            <div className="mb-4 flex justify-between items-end">
+              <div>
+                <p className="text-sm text-gray-600">Student: <span className="font-semibold text-gray-800">{selectedEnrollment.student.name}</span></p>
+                <p className="text-sm text-gray-600">Course: <span className="font-semibold text-gray-800">{selectedEnrollment.courseTitle}</span></p>
+              </div>
+              <button
+                disabled={isUpdating || selectedEnrollment.progress === "Completed"}
+                onClick={() => handleProgressUpdate({ isCourseCompleted: true })}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
+                    ? "bg-green-100 text-green-700 cursor-not-allowed"
+                    : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                  }`}
+              >
+                {selectedEnrollment.progress === "Completed" ? "✓ Fully Completed" : "Mark Full Course Completed"}
+              </button>
             </div>
 
             <div className="space-y-4">
               {modalCourseContent ? (
                 modalCourseContent.map((chapter, cIndex) => (
-                  <div key={chapter.chapterId} className="border rounded-md p-3 bg-gray-50">
-                    <h3 className="font-semibold text-gray-700 mb-2">{cIndex + 1}. {chapter.chapterTitle}</h3>
+                  <div key={chapter.chapterId} className="border rounded-md p-3 bg-gray-50 group/chap transition hover:border-blue-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold text-gray-700">{cIndex + 1}. {chapter.chapterTitle}</h3>
+                      <button
+                        disabled={isUpdating}
+                        onClick={() => {
+                          const allChapLecIds = chapter.chapterContent.map(l => l.lectureId);
+                          const allDone = allChapLecIds.every(id => selectedEnrollment.completedLectures?.includes(id));
+                          handleProgressUpdate({ chapterId: chapter.chapterId, markAsCompleted: !allDone });
+                        }}
+                        className="text-[10px] px-2 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded hover:bg-indigo-600 hover:text-white transition"
+                      >
+                        {chapter.chapterContent.every(l => selectedEnrollment.completedLectures?.includes(l.lectureId))
+                          ? "Unmark Chapter"
+                          : "Mark Chapter Completed"}
+                      </button>
+                    </div>
                     <div className="space-y-2 ml-2">
                       {chapter.chapterContent.map((lecture, lIndex) => {
                         const isCompleted = selectedEnrollment.completedLectures?.includes(lecture.lectureId);
@@ -265,8 +305,8 @@ const StudentEnrolled = () => {
                               type="checkbox"
                               checked={isCompleted}
                               disabled={isUpdating}
-                              onChange={(e) => handleProgressUpdate(lecture.lectureId, e.target.checked)}
-                              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                              onChange={(e) => handleProgressUpdate({ lectureId: lecture.lectureId, markAsCompleted: e.target.checked })}
+                              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
                             />
                             <span className={`text-sm ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
                               {lIndex + 1}. {lecture.lectureTitle}

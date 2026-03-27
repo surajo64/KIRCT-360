@@ -189,6 +189,13 @@ const AllCourses = () => {
                         </button>
 
                         <button
+                          onClick={() => navigate(`/educator/add-quize?courseId=${course._id}`)}
+                          className="px-3 py-1 rounded-lg bg-green-50 text-green-600 font-medium shadow hover:bg-green-100 focus:ring-2 focus:ring-green-300 transition text-xs"
+                        >
+                          Quiz
+                        </button>
+
+                        <button
                           onClick={() => setDeleteDialog({ isOpen: true, course })}
                           className="px-3 py-1 rounded-lg bg-red-50 text-red-600 font-medium shadow hover:bg-red-100 focus:ring-2 focus:ring-red-300 transition text-xs"
                         >

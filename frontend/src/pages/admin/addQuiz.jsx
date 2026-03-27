@@ -2,20 +2,61 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
+import { useSearchParams } from "react-router-dom";
 
 const AddQuiz = () => {
-  const { atoken, educatorCourses, backendUrl, fetchEducatorCourses } =
+  const { atoken, educatorCourses, allCourses, backendUrl, fetchEducatorCourses } =
     useContext(AppContext);
+
+  const [searchParams] = useSearchParams();
+  const queryCourseId = searchParams.get("courseId");
 
   const [questions, setQuestions] = useState([
     { questionText: "", options: ["", "", "", ""], correctAnswer: "" },
   ]);
   const [selectedCourse, setSelectedCourse] = useState("");
 
+  // Get user role for filtering courses
+  const adminDataLocal = JSON.parse(localStorage.getItem('admin'));
+  const role = adminDataLocal?.role;
+  const courseList = role === 'admin' ? allCourses : educatorCourses;
+
   // ✅ Fetch educator's courses once
   useEffect(() => {
     fetchEducatorCourses();
   }, []);
+
+  // ✅ Set selected course from query param if available
+  useEffect(() => {
+    if (queryCourseId) {
+      setSelectedCourse(queryCourseId);
+    }
+  }, [queryCourseId]);
+
+  // ✅ Fetch existing quiz when selectedCourse changes
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      if (!selectedCourse) {
+        setQuestions([{ questionText: "", options: ["", "", "", ""], correctAnswer: "" }]);
+        return;
+      }
+
+      try {
+        const { data } = await axios.get(`${backendUrl}/api/course/quiz/${selectedCourse}`);
+        if (data.success && data.quiz && data.quiz.questions && data.quiz.questions.length > 0) {
+          setQuestions(data.quiz.questions);
+        } else {
+          // No quiz found, reset to blank
+          setQuestions([{ questionText: "", options: ["", "", "", ""], correctAnswer: "" }]);
+        }
+      } catch (err) {
+        console.error("Error fetching quiz:", err);
+        setQuestions([{ questionText: "", options: ["", "", "", ""], correctAnswer: "" }]);
+      }
+    };
+
+    fetchQuizData();
+  }, [selectedCourse, backendUrl]);
 
   // Add new question
   const addQuestion = () => {
@@ -94,7 +135,7 @@ const AddQuiz = () => {
         className="border p-2 w-44 rounded "
       >
         <option value="">-- Select Course --</option>
-        {educatorCourses.map((course) => (
+        {courseList.map((course) => (
           <option key={course._id} value={course._id}>
             {course.courseTitle}
           </option>
