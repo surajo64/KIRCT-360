@@ -18,6 +18,7 @@ const courseDetails = () => {
   const [isAlreadEnrolled, setIsAlreadEnrolled] = useState(true)
   const [playerData, setPlayerData] = useState(null)
   const [attendanceType, setAttendanceType] = useState('Physical'); // Default to Physical
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const { courseId } = useParams();
 
   // Set default attendance type based on mode when data loads
@@ -58,7 +59,9 @@ const courseDetails = () => {
   const enrollCourse = async () => {
     if (!userData) return toast.warning("Please Login To Enroll!");
     if (isAlreadEnrolled) return toast.warning("Already Enrolled!");
+    if (isEnrolling) return;
 
+    setIsEnrolling(true);
     try {
       const { data } = await axios.post(
         backendUrl + "/api/user/purchase",
@@ -74,10 +77,12 @@ const courseDetails = () => {
         window.location.href = data.authorization_url;
       } else {
         toast.error(data.message);
+        setIsEnrolling(false);
       }
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong with enrollment!");
+      setIsEnrolling(false);
     }
   };
 
@@ -273,8 +278,21 @@ const courseDetails = () => {
 
             </div>
 
-            <button onClick={enrollCourse} className=" md:mt-6 mt-4 py-3 bg-blue-600 text-white w-full font-medium rounded ">
-              {isAlreadEnrolled ? 'Alread Enrolled' : 'Enroll Now'}</button>
+            <button
+              onClick={enrollCourse}
+              disabled={isEnrolling || isAlreadEnrolled}
+              className="md:mt-6 mt-4 py-3 bg-blue-600 text-white w-full font-medium rounded flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+            >
+              {isEnrolling ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : isAlreadEnrolled ? 'Already Enrolled' : 'Enroll Now'}
+            </button>
 
             <div className='pt-6'>
               <p className='md:text-xl text-lg font-medium text-gray-800'> What's in the Course?</p>

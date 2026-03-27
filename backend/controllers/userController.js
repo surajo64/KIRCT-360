@@ -4,17 +4,18 @@ import fs from "fs";
 import CourseProgress from '../models/courseProgressModel.js';
 import Purchase from '../models/purchaseModel.js';
 import User from '../models/userModel.js'
+import Admin from '../models/adminModel.js';
 import Quiz, { questionSchema } from "../models/quizMode.js";
 import Stripe from 'stripe'
 import bcrypt, { hash } from "bcrypt";
 import jwt from 'jsonwebtoken'
 import { v2 as cloudinary } from 'cloudinary'
-import { use } from 'react';
 import axios from 'axios'
 import crypto from "crypto";
 import streamifier from "streamifier";
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit"
+import { sendEnrollmentConfirmationEmail, sendEnrollmentNotificationEmail } from '../config/emailUtils.js';
 
 
 
@@ -351,9 +352,48 @@ export const verifyPayment = async (req, res) => {
     }
 
     if (status === "Completed") {
-      // Use $addToSet to safely add without triggering pre-save middleware
-      await User.findByIdAndUpdate(userId, { $addToSet: { enrolledCourses: courseId } });
-      await Course.findByIdAndUpdate(courseId, { $addToSet: { enrolledStudents: userId } });
+      // Use $addToSet to safely enroll without triggering pre-save middleware
+      const [updatedUser, updatedCourse] = await Promise.all([
+        User.findByIdAndUpdate(userId, { $addToSet: { enrolledCourses: courseId } }, { new: true }),
+        Course.findByIdAndUpdate(courseId, { $addToSet: { enrolledStudents: userId } }, { new: true }).populate('educator', 'name email'),
+      ]);
+
+      // Send enrollment emails (non-blocking — failures won't affect the response)
+      const finalAttendanceType = attendanceType || "Physical";
+      const emailPromises = [];
+
+      if (updatedUser?.email) {
+        emailPromises.push(
+          sendEnrollmentConfirmationEmail({
+            studentName: updatedUser.name,
+            studentEmail: updatedUser.email,
+            courseTitle: updatedCourse?.courseTitle || "Course",
+            courseMode: updatedCourse?.courseMode || "",
+            attendanceType: finalAttendanceType,
+            courseAddress: updatedCourse?.courseAddress || "",
+            meetingUrl: updatedCourse?.meetingUrl || "",
+            classSchedule: updatedCourse?.classSchedule || "",
+            amount,
+          }).catch(err => console.error("Student email error:", err.message))
+        );
+      }
+
+      if (updatedCourse?.educator?.email) {
+        emailPromises.push(
+          sendEnrollmentNotificationEmail({
+            educatorName: updatedCourse.educator.name,
+            educatorEmail: updatedCourse.educator.email,
+            studentName: updatedUser?.name || "A student",
+            studentEmail: updatedUser?.email || "N/A",
+            courseTitle: updatedCourse.courseTitle,
+            attendanceType: finalAttendanceType,
+            amount,
+          }).catch(err => console.error("Educator email error:", err.message))
+        );
+      }
+
+      // Fire emails in parallel without awaiting (non-blocking)
+      Promise.all(emailPromises);
 
       return res.json({ success: true, message: "Enrollment successful" });
     } else {
@@ -364,6 +404,7 @@ export const verifyPayment = async (req, res) => {
     return res.status(500).json({ success: false, message: "Error saving enrollment: " + error.message });
   }
 };
+
 
 
 // Update user Course Progress
