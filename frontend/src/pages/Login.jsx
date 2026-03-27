@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useContext } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext, } from '../context/AppContext';
+import LoadingOverlay from '../components/loadingOverlay';
 
 
 
@@ -18,6 +19,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
     try {
       const { data } = await axios.post(backendUrl + '/api/educator/login', {
         email,
@@ -47,6 +49,8 @@ const Login = () => {
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.response?.data?.message || "Login failed!");
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -59,6 +63,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
+      {isLoading && <LoadingOverlay />}
       <h1 className="text-2xl sm:text-3xl font-bold text-center text-Blue-800 mb-6">
         KIRCT LEARNING MANAGEMENT SYSTEM
       </h1>

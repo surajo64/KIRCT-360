@@ -46,24 +46,18 @@ const courseSchema = new mongoose.Schema({
 
 courseSchema.pre("save", function (next) {
   // Calculate default purchasePrice (legacy support)
-  this.purchasePrice = Math.max(this.coursePrice - this.discount, 0);
+  // Discount is now a percentage (0-100)
+  const discountFactor = (100 - this.discount) / 100;
+  
+  this.purchasePrice = Math.max(Math.round(this.coursePrice * discountFactor), 0);
 
   // Calculate Physical and Virtual Purchase Prices
-  // If not explicitly set, they default to 0, so we check if they are > 0 before applying discount
-  // If they are 0, we might want to default them to coursePrice, but for now let's respect the inputs.
-  // Assuming discount applies to all prices equally (flat amount). 
-  // If distinct discounts are needed, we'd need discountPhysical/Virtual. 
-  // For now, applying the same flat discount to both.
-
   if (this.coursePricePhysical > 0) {
-    this.purchasePricePhysical = Math.max(this.coursePricePhysical - this.discount, 0);
+    this.purchasePricePhysical = Math.max(Math.round(this.coursePricePhysical * discountFactor), 0);
   }
 
   if (this.coursePriceVirtual > 0) {
-    this.purchasePriceVirtual = Math.max(this.coursePriceVirtual - this.discount, 0);
-  } else {
-    // Logic: If virtual price is not set, maybe default to base price? 
-    // For now, let's keep it clean. If 0, then 0.
+    this.purchasePriceVirtual = Math.max(Math.round(this.coursePriceVirtual * discountFactor), 0);
   }
 
   next();
@@ -77,17 +71,21 @@ courseSchema.pre("findOneAndUpdate", function (next) {
   // Check if any price or discount is being updated
   if (update.coursePrice !== undefined || update.discount !== undefined || update.coursePricePhysical !== undefined || update.coursePriceVirtual !== undefined) {
 
-    // We need to access the NEW values preferably, or fallback to existing.
-    // However, in findOneAndUpdate, we don't easily have 'this' referring to the doc before update unless we query.
-    // Simplifying: We rely on the fact that if we update, we usually send all data or we accept that recalc might be tricky without full data.
-    // A safer way is to just let the logic run if we have the data in 'update'.
-
-    const discount = update.discount; // If discount changes, we need to recalc all
+    // We need to access the values being updated. 
+    // Note: This relies on the update object having the necessary fields.
+    // In many cases, only some fields are updated. 
+    
+    // If discount is provided in update, use it, otherwise we'd need the doc's current discount.
+    // For simplicity and safety during educator updates (where usually most fields are sent), 
+    // we recalc if the fields are present.
+    
+    const discount = update.discount; 
 
     if (discount !== undefined) {
-      if (update.coursePrice !== undefined) update.purchasePrice = Math.max(update.coursePrice - discount, 0);
-      if (update.coursePricePhysical !== undefined) update.purchasePricePhysical = Math.max(update.coursePricePhysical - discount, 0);
-      if (update.coursePriceVirtual !== undefined) update.purchasePriceVirtual = Math.max(update.coursePriceVirtual - discount, 0);
+      const discountFactor = (100 - discount) / 100;
+      if (update.coursePrice !== undefined) update.purchasePrice = Math.max(Math.round(update.coursePrice * discountFactor), 0);
+      if (update.coursePricePhysical !== undefined) update.purchasePricePhysical = Math.max(Math.round(update.coursePricePhysical * discountFactor), 0);
+      if (update.coursePriceVirtual !== undefined) update.purchasePriceVirtual = Math.max(Math.round(update.coursePriceVirtual * discountFactor), 0);
     }
   }
   next();

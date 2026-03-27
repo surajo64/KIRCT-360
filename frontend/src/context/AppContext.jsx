@@ -25,13 +25,17 @@ const AppContextProvider = (props) => {
   const [enrolledCourses, setEnrolledCourses] = useState([])
 
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('admin');
     localStorage.removeItem('atoken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUserData(null);
+    setToken('');
     setAtoken('');
-    navigate("/login");  // now always shows login
-  };
+    setAdminData(null);
+    navigate("/login");
+  }, [navigate]);
 
   // Fetch all Students
   const fetchAllStudents = async () => {
@@ -202,6 +206,34 @@ const AppContextProvider = (props) => {
       setAdminData(false)
     }
   }, [atoken])
+
+  // Inactivity Timeout Logic (10 minutes)
+  useEffect(() => {
+    let timeout;
+    const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
+
+    const resetTimer = () => {
+      if (timeout) clearTimeout(timeout);
+      if (token || atoken) {
+        timeout = setTimeout(() => {
+          logout();
+          toast.info("Session expired due to inactivity. Please login again.");
+        }, INACTIVITY_LIMIT);
+      }
+    };
+
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+
+    if (token || atoken) {
+      activityEvents.forEach(event => window.addEventListener(event, resetTimer));
+      resetTimer(); // Initialize timer
+    }
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+      activityEvents.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [token, atoken, logout]);
 
 
 

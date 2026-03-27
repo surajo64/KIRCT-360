@@ -44,8 +44,7 @@ const CourseCard = ({ course }) => {
           <p className="text-gray-500">{course.courseRatings.length}</p>
         </div>
         <p className="text-base font-semibold text-gray-800">
-          {currencySymbol} {(course.coursePrice - course.discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-
+          {currencySymbol} {(course.coursePrice * (1 - course.discount / 100)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </p>
       </div>
     </Link>

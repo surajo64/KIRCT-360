@@ -7,12 +7,13 @@ import { AppContext } from "../context/AppContext";
 import { assets } from '../assets/assets';
 import { toast } from "react-toastify";
 import axios from "axios";
+import LoadingOverlay from "./loadingOverlay";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const { token, setToken, userData, setUserData, userProfile, backendUrl } = useContext(AppContext);
+  const { token, setToken, userData, setUserData, userProfile, backendUrl, logout } = useContext(AppContext);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -34,6 +35,7 @@ const Navbar = () => {
   const [changePassword, setChangePassword] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   // Local form state for editing
   const [formData, setFormData] = useState({
@@ -61,11 +63,6 @@ const Navbar = () => {
     }
   }, [userData, open]);
 
-  const logout = () => {
-    setToken("");
-    localStorage.removeItem("token");
-    navigate("/");
-  };
 
   const clear = () => {
     setCurrentPassword("");
@@ -76,6 +73,7 @@ const Navbar = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
     if (isRegistering) {
       // Registration logic
       try {
@@ -100,6 +98,8 @@ const Navbar = () => {
         }
       } catch (error) {
         toast.error(error.response?.data?.message || "Registration failed!");
+      } finally {
+        setIsLoading(false);
       }
     } else {
       // Login logic
@@ -124,6 +124,8 @@ const Navbar = () => {
         }
       } catch (error) {
         toast.error(error.response?.data?.message || "Login failed!");
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -295,6 +297,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white text-gray-700 shadow-xl sticky top-0 z-50">
+      {isLoading && <LoadingOverlay />}
 
       {/* Scrolling Banner */}
       <div className="relative overflow-hidden bg-blue-950 py-2 text-sm text-blue-200">

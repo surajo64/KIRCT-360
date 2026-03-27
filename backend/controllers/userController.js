@@ -256,8 +256,8 @@ export const purchaseCourse = async (req, res) => {
     }
 
     // Calculate Amount in Kobo
-    // Applying discount (assuming discount applies to all)
-    const amount = Math.max(price - course.discount, 0) * 100;
+    // Applying discount as a percentage (0-100)
+    const amount = Math.max(Math.round(price * (1 - course.discount / 100)), 0) * 100;
 
     // Unique reference
     const reference = `KIRCT_${crypto.randomBytes(8).toString("hex")}`;

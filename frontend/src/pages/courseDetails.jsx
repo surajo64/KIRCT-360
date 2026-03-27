@@ -217,7 +217,7 @@ const courseDetails = () => {
                 {currencySymbol}
                 {((attendanceType === 'Physical' && courseData.coursePricePhysical > 0 ? courseData.coursePricePhysical :
                   attendanceType === 'Virtual' && courseData.coursePriceVirtual > 0 ? courseData.coursePriceVirtual :
-                    courseData.coursePrice) - courseData.discount).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    courseData.coursePrice) * (1 - courseData.discount / 100)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
               <p className='md:text-lg text-gray-500 line-through'>
                 {currencySymbol}
@@ -225,7 +225,7 @@ const courseDetails = () => {
                   attendanceType === 'Virtual' && courseData.coursePriceVirtual > 0 ? courseData.coursePriceVirtual :
                     courseData.coursePrice)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
-              <p className='md:text-lg text-gray-500'>{Math.round(courseData.discount / (attendanceType === 'Physical' && courseData.coursePricePhysical > 0 ? courseData.coursePricePhysical : courseData.coursePrice) * 100)}% off</p>
+              <p className='md:text-lg text-gray-500'>{courseData.discount}% off</p>
             </div>
 
             {/* Attendance Toggle */}
