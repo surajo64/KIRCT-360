@@ -307,9 +307,13 @@ export const purchaseCourse = async (req, res) => {
 export const verifyPayment = async (req, res) => {
   const { reference, userId, courseId } = req.body;
 
+  if (!reference || !userId || !courseId) {
+    return res.status(400).json({ success: false, message: "Missing required fields: reference, userId, courseId" });
+  }
+
+  let paystackResponse;
   try {
-    // Verify payment with Paystack
-    const response = await axios.get(
+    paystackResponse = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
         headers: {
@@ -317,46 +321,47 @@ export const verifyPayment = async (req, res) => {
         },
       }
     );
+  } catch (paystackError) {
+    // Paystack returned a 4xx error (e.g. invalid/duplicate reference)
+    const paystackMsg = paystackError.response?.data?.message || "Paystack verification failed";
+    console.error("Paystack verify error:", paystackMsg);
+    return res.status(400).json({ success: false, message: paystackMsg });
+  }
 
-    const paymentData = response.data;
-    const status = paymentData.data.status === "success" ? "Completed" : "Failed";
-    const amount = paymentData.data.amount / 100; // convert kobo to Naira
+  try {
+    const paymentData = paystackResponse.data;
+    const txStatus = paymentData.data?.status;
+    const status = txStatus === "success" ? "Completed" : "Failed";
+    const amount = (paymentData.data?.amount || 0) / 100; // kobo → Naira
+    const { attendanceType } = paymentData.data?.metadata || {};
 
-    // Extract metadata
-    const { attendanceType } = paymentData.data.metadata || {};
-
-    // Record purchase
-    const purchase = new Purchase({
-      courseId,
-      userId,
-      amount,
-      attendanceType: attendanceType || 'Physical', // default backup
-      status,
-    });
-    await purchase.save();
+    // Avoid duplicate purchase records
+    const existing = await Purchase.findOne({ courseId, userId });
+    if (!existing) {
+      await Purchase.create({
+        courseId,
+        userId,
+        amount,
+        attendanceType: attendanceType || "Physical",
+        status,
+      });
+    } else if (existing.status !== "Completed" && status === "Completed") {
+      existing.status = "Completed";
+      await existing.save();
+    }
 
     if (status === "Completed") {
-      // Update User enrolledCourses
-      const user = await User.findById(userId);
-      if (!user.enrolledCourses.includes(courseId)) {
-        user.enrolledCourses.push(courseId);
-        await user.save();
-      }
-
-      // Update Course userEnrolled
-      const course = await Course.findById(courseId);
-      if (!course.enrolledStudents.includes(userId)) {
-        course.enrolledStudents.push(userId);
-        await course.save();
-      }
+      // Use $addToSet to safely add without triggering pre-save middleware
+      await User.findByIdAndUpdate(userId, { $addToSet: { enrolledCourses: courseId } });
+      await Course.findByIdAndUpdate(courseId, { $addToSet: { enrolledStudents: userId } });
 
       return res.json({ success: true, message: "Enrollment successful" });
     } else {
-      return res.status(400).json({ success: false, message: "Payment not verified" });
+      return res.status(400).json({ success: false, message: `Payment status: ${txStatus}` });
     }
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    return res.status(500).json({ success: false, message: "Error verifying payment" });
+    console.error("verifyPayment DB error:", error.message);
+    return res.status(500).json({ success: false, message: "Error saving enrollment: " + error.message });
   }
 };
 
