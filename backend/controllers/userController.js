@@ -15,7 +15,7 @@ import crypto from "crypto";
 import streamifier from "streamifier";
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit"
-import { sendEnrollmentConfirmationEmail, sendEnrollmentNotificationEmail } from '../config/emailUtils.js';
+import { sendEnrollmentConfirmationEmail, sendEnrollmentNotificationEmail, sendEmail } from '../config/emailUtils.js';
 
 
 
@@ -194,6 +194,101 @@ export const changePassword = async (req, res) => {
   }
 };
 
+
+
+// API to request password reset
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.json({ success: false, message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don't reveal whether the email exists
+      return res.json({ success: true, message: 'If this email is registered, a reset link will be sent.' });
+    }
+
+    // Generate a secure random token
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+        <div style="background: #004d99; padding: 24px 32px;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Password Reset Request</h1>
+        </div>
+        <div style="padding: 24px 32px; color: #333;">
+          <p>Dear <strong>${user.name}</strong>,</p>
+          <p>We received a request to reset your password. Click the button below to set a new password. This link will expire in <strong>1 hour</strong>.</p>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${resetUrl}" style="background: #004d99; color: #fff; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold;">Reset My Password</a>
+          </div>
+          <p>If you did not request this, you can safely ignore this email — your password will remain unchanged.</p>
+          <p>Best regards,<br><strong>KIRCT Team</strong></p>
+        </div>
+        <div style="background: #f0f0f0; padding: 12px 32px; font-size: 12px; color: #888; text-align: center;">
+          This is an automated notification. Please do not reply to this email.
+        </div>
+      </div>
+    `;
+
+    await sendEmail(user.email, 'Password Reset – KIRCT', html);
+
+    return res.json({ success: true, message: 'If this email is registered, a reset link will be sent.' });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// API to reset password via token
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token || !password) {
+      return res.json({ success: false, message: 'Token and new password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.json({ success: false, message: 'Password must be at least 6 characters' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.json({ success: false, message: 'Reset link is invalid or has expired' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+    await user.save();
+
+    return res.json({ success: true, message: 'Password reset successfully. You can now log in.' });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 
 // user enrolled Courses with lecture link

@@ -50,6 +50,8 @@ import Login from './pages/Login'
 import PaymentCallback from './pages/payment-callback'
 import CourseDetails from './pages/courseDetails'
 import Player from './pages/player'
+import ForgotPassword from './pages/ForgotPassword '
+import ResetPassword from './pages/resetPassword'
 
 // Admin/Educator Pages Imports
 import EducatorDashboard from './pages/admin/educator-dashboard'
@@ -150,6 +152,8 @@ const App = () => {
             <Route path='/payment-callback' element={<PaymentCallback />} />
             <Route path='/course/:id' element={<CourseDetails />} />
             <Route path='/player/:courseId' element={<Player />} />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path='/reset-password/:token' element={<ResetPassword />} />
           </Routes>
           <Footer />
         </>

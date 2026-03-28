@@ -14,18 +14,17 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  /* try {*/
+    try {
       const { data } = await axios.post(`${backendUrl}/api/user/reset-password/${token}`, { password });
-      console.log("Received Token:", token);
-      console.log("New Password:", password);
-      toast.success( 'Password updated successfully');
-        navigate("/login"); 
-      
-      
-    
-    /*} catch (error) {
-      toast.error('Error resetting password');
-    }*/
+      if (data.success) {
+        toast.success('Password reset successfully. Please log in.');
+        navigate('/login');
+      } else {
+        toast.error(data.message || 'Error resetting password');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error resetting password');
+    }
   };
 
   return (
