@@ -52,7 +52,7 @@ import CourseDetails from './pages/courseDetails'
 import Player from './pages/player'
 import ForgotPassword from './pages/ForgotPassword '
 import ResetPassword from './pages/resetPassword'
-
+import VerifyEmail from './pages/VerifyEmail'
 // Admin/Educator Pages Imports
 import EducatorDashboard from './pages/admin/educator-dashboard'
 import AdminDashboard from './pages/admin/admin-dashboard'
@@ -154,6 +154,7 @@ const App = () => {
             <Route path='/player/:courseId' element={<Player />} />
             <Route path='/forgot-password' element={<ForgotPassword />} />
             <Route path='/reset-password/:token' element={<ResetPassword />} />
+            <Route path='/verify-email/:token' element={<VerifyEmail />} />
           </Routes>
           <Footer />
         </>

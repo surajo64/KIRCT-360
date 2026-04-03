@@ -204,3 +204,33 @@ export const sendEnrollmentNotificationEmail = async ({
   `;
   await sendEmail(educatorEmail, subject, html);
 };
+
+/**
+ * Sent to the student for email verification after registration.
+ */
+export const sendVerificationEmail = async (email, name, token) => {
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+  const subject = `📧 Verify Your Email – KIRCT`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+      <div style="background: #004d99; padding: 24px 32px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Email Verification</h1>
+      </div>
+      <div style="padding: 24px 32px; color: #333;">
+        <p>Dear <strong>${name}</strong>,</p>
+        <p>Thank you for registering at <strong>KIRCT</strong>. Please click the button below to verify your email address and activate your account.</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${verificationUrl}" style="background: #004d99; color: #fff; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold;">Verify Email Address</a>
+        </div>
+        <p>If the button doesn't work, you can copy and paste the following link into your browser:</p>
+        <p style="word-break: break-all; color: #004d99;">${verificationUrl}</p>
+        <p>If you did not create an account, you can safely ignore this email.</p>
+        <p>Best regards,<br><strong>KIRCT Team</strong></p>
+      </div>
+      <div style="background: #f0f0f0; padding: 12px 32px; font-size: 12px; color: #888; text-align: center;">
+        This is an automated notification. Please do not reply to this email.
+      </div>
+    </div>
+  `;
+  await sendEmail(email, subject, html);
+};

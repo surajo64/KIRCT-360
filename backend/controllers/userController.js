@@ -15,7 +15,7 @@ import crypto from "crypto";
 import streamifier from "streamifier";
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit"
-import { sendEnrollmentConfirmationEmail, sendEnrollmentNotificationEmail, sendEmail } from '../config/emailUtils.js';
+import { sendEnrollmentConfirmationEmail, sendEnrollmentNotificationEmail, sendEmail, sendVerificationEmail } from '../config/emailUtils.js';
 
 
 
@@ -51,17 +51,22 @@ export const registerUser = async (req, res) => {
       }
     }
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
     const newUser = new User({
       name,
       email,
       phone,
       password: hashedPassword,
+      verificationToken
     });
 
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
-    res.json({ success: true, token });
+    await sendVerificationEmail(email, name, verificationToken);
+
+    res.json({ success: true, message: "Verification email sent! Please check your inbox." });
 
   } catch (error) {
     res.status(500).json({ message: "Error registering user", error: error.message });
@@ -93,7 +98,12 @@ export const userLogin = async (req, res) => {
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Invalid password or Password!" });
+      return res.status(400).json({ success: false, message: "Invalid email or Password!" });
+    }
+
+    // Check if verified
+    if (!user.isVerified) {
+      return res.status(400).json({ success: false, message: "Please verify your email address to login." });
     }
 
     // Generate JWT
@@ -850,5 +860,41 @@ export const getCertificate = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error", error: err.message });
+  }
+};
+
+// API to Verify Email
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid or expired verification token." });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    // Generate JWT to login the user immediately
+    const loginToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    return res.json({
+      success: true,
+      message: "Email verified successfully!",
+      token: loginToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      }
+    });
+
+  } catch (error) {
+    console.error("Verification error:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

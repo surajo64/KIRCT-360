@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
-import Loading from '../components/loading';
 import { assets } from '../assets/assets';
 import humanizeDuration from 'humanize-duration';
 import YouTube from 'react-youtube'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import loading from '../components/loading';
+import LoadingOverlay from '../components/loadingOverlay';
 
 const courseDetails = () => {
 
@@ -313,7 +312,7 @@ const courseDetails = () => {
 
       </div>
     </>
-  ) : <loading />
+  ) : <LoadingOverlay />
 };
 
 export default courseDetails;

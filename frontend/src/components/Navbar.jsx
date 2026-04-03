@@ -85,14 +85,13 @@ const Navbar = () => {
         });
 
         if (data.success) {
-          localStorage.setItem("token", data.token);
-          setToken(data.token);
           setName("");
           setEmail("");
           setPhone("");
           setPassword("");
-          toast.success("Account created successfully!");
+          toast.success(data.message || "Account created! Please check your email to verify your account.");
           setShowAuthModal(false);
+          setIsRegistering(false); // Switch back to login for next time
         } else {
           toast.error(data.message);
         }
@@ -608,6 +607,7 @@ const Navbar = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full mb-3 border px-3 py-2 rounded"
+                  required
                 />
                 <input
                   type="password"

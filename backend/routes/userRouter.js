@@ -1,6 +1,6 @@
 import express from 'express';
 import authUser from '../middlewares/authUser.js';
-import { addUserRating, changePassword, fetchQuiz, forgotPassword, getCertificate, getUserCourseProgress, getUserData, purchaseCourse, registerUser, resetPassword, retakeCourse, sumbitQuiz, updateCourseProgress, updateProfile, userEnrolledCourses, userLogin, verifyPayment } from '../controllers/userController.js';
+import { addUserRating, changePassword, fetchQuiz, forgotPassword, getCertificate, getUserCourseProgress, getUserData, purchaseCourse, registerUser, resetPassword, retakeCourse, sumbitQuiz, updateCourseProgress, updateProfile, userEnrolledCourses, userLogin, verifyEmail, verifyPayment } from '../controllers/userController.js';
 import upload from '../middlewares/multer.js';
 
 
@@ -9,6 +9,7 @@ const userRouter = express.Router();
 // Route to add a user 
 
 userRouter.post('/register' ,registerUser)
+userRouter.get('/verify-email/:token', verifyEmail)
 userRouter.post('/update',upload.single('image'), authUser, updateProfile )  
 userRouter.post('/login' ,userLogin)
 userRouter.post('/forgot-password', forgotPassword)

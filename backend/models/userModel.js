@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
   dob: { type: Date, default: "1990/01/01" },
   resetPasswordToken: { type: String, default: null },
   resetPasswordExpires: { type: Date, default: null },
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String, default: null },
   isActive: { type: Boolean, default: true },
   enrolledCourses: [
     {
