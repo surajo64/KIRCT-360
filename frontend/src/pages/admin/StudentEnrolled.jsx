@@ -72,15 +72,22 @@ const StudentEnrolled = () => {
         // Update local state from response
         const updatedLectures = data.progress.lectureCompleted;
         const isFinished = data.progress.completed;
+        const certificateUrl = data.certificateUrl || data.progress.certificateUrl;
 
-        setSelectedEnrollment({
+        const updatedStudent = {
           ...selectedEnrollment,
           completedLectures: updatedLectures,
           progress: isFinished ? "Completed" : "On Going",
           quizPassed: data.progress.quizPassed,
           quizTaken: data.progress.quizTaken,
-          quizScore: data.progress.quizScore
-        });
+          quizScore: data.progress.quizScore,
+          certificateUrl: certificateUrl,
+          progressPercentage: data.progressPercentage,
+          completedCount: data.completedCount,
+          totalLectures: data.totalLectures
+        };
+
+        setSelectedEnrollment(updatedStudent);
 
         // Update main list
         setStudents(students.map(s =>
@@ -91,12 +98,16 @@ const StudentEnrolled = () => {
               progress: isFinished ? "Completed" : "On Going",
               quizPassed: data.progress.quizPassed,
               quizTaken: data.progress.quizTaken,
-              quizScore: data.progress.quizScore
+              quizScore: data.progress.quizScore,
+              certificateUrl: certificateUrl,
+              progressPercentage: data.progressPercentage,
+              completedCount: data.completedCount,
+              totalLectures: data.totalLectures
             }
             : s
         ));
 
-        toast.success(isCourseCompleted ? "Course Marked Completed" : chapterId ? "Chapter Updated" : "Progress Updated");
+        toast.success(isCourseCompleted === true ? "Course Marked Completed (Certificate Generated)" : isCourseCompleted === false ? "Course Unmarked" : chapterId ? "Chapter Updated" : "Progress Updated");
       } else {
         toast.error(data.message);
       }
@@ -190,9 +201,20 @@ const StudentEnrolled = () => {
                   <td className="px-4 py-3 text-gray-600">{student.courseTitle}</td>
                   <td className="px-4 py-3 text-gray-500">{new Date(student.purchaseDate).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${student.progress === "Completed" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
-                      {student.progress}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                        <div
+                          className="bg-blue-600 h-1.5 rounded-full transition-all"
+                          style={{ width: `${student.progressPercentage || (student.progress === 'Completed' ? 100 : 0)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-[10px] text-gray-600">
+                        {student.completedCount !== undefined && student.totalLectures !== undefined 
+                          ? `${student.completedCount}/${student.totalLectures} (${student.progressPercentage}%)`
+                          : `${student.progressPercentage || (student.progress === 'Completed' ? 100 : 0)}%`
+                        }
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 group relative cursor-help">
                     {student.quizTaken ? (
@@ -211,37 +233,43 @@ const StudentEnrolled = () => {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    {student.certificateUrl ? (
-                      <a
-                        href={student.certificateUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-semibold border border-blue-200 inline-block"
-                      >
-                        Download Certificate
-                      </a>
-                    ) : student.quizPassed ? (
-                      <button
-                        onClick={() => handleGenerateCertificate(student)}
-                        className="px-3 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs font-semibold border border-green-200"
-                      >
-                        Generate Certificate
-                      </button>
-                    ) : student.quizTaken && !student.quizPassed ? (
-                      <button
-                        onClick={() => handleRetakeQuiz(student)}
-                        className="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-semibold border border-red-200"
-                      >
-                        Retake Quiz
-                      </button>
-                    ) : (
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => openProgressModal(student)}
-                        className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100 text-xs font-semibold border border-indigo-200"
+                        className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-[10px] font-bold shadow-sm transition active:scale-95"
                       >
-                        Manage Progress
+                        Manage
                       </button>
-                    )}
+
+                      {student.certificateUrl && (
+                        <a
+                          href={student.certificateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-[10px] font-semibold border border-blue-200"
+                        >
+                          PDF
+                        </a>
+                      )}
+
+                      {student.quizPassed && !student.certificateUrl && (
+                        <button
+                          onClick={() => handleGenerateCertificate(student)}
+                          className="px-3 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-[10px] font-semibold border border-green-200"
+                        >
+                          Cert
+                        </button>
+                      )}
+
+                      {student.quizTaken && !student.quizPassed && (
+                        <button
+                          onClick={() => handleRetakeQuiz(student)}
+                          className="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-[10px] font-semibold border border-red-200"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -256,7 +284,7 @@ const StudentEnrolled = () => {
           <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Manage Progress</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-red-500">✕</button>
+              <button onClick={() => { setShowModal(false); window.location.reload(); }} className="text-gray-500 hover:text-red-500">✕</button>
             </div>
 
             <div className="mb-4 flex justify-between items-end">
@@ -265,14 +293,14 @@ const StudentEnrolled = () => {
                 <p className="text-sm text-gray-600">Course: <span className="font-semibold text-gray-800">{selectedEnrollment.courseTitle}</span></p>
               </div>
               <button
-                disabled={isUpdating || selectedEnrollment.progress === "Completed"}
-                onClick={() => handleProgressUpdate({ isCourseCompleted: true })}
+                disabled={isUpdating}
+                onClick={() => handleProgressUpdate({ isCourseCompleted: selectedEnrollment.progress !== "Completed" })}
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
-                    ? "bg-green-100 text-green-700 cursor-not-allowed"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200"
                     : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
                   }`}
               >
-                {selectedEnrollment.progress === "Completed" ? "✓ Fully Completed" : "Mark Full Course Completed"}
+                {selectedEnrollment.progress === "Completed" ? "Unmark Course Completed" : "Mark Full Course Completed"}
               </button>
             </div>
 
@@ -323,7 +351,7 @@ const StudentEnrolled = () => {
             </div>
 
             <div className="mt-6 flex justify-end">
-              <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded text-gray-700 hover:bg-gray-300">
+              <button onClick={() => { setShowModal(false); window.location.reload(); }} className="px-4 py-2 bg-gray-200 rounded text-gray-700 hover:bg-gray-300">
                 Close
               </button>
             </div>

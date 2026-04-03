@@ -12,6 +12,12 @@ const AllStudentEnrolled = () => {
   const [courses, setCourses] = useState([]);
   const { currencySymbol, backendUrl, atoken } = useContext(AppContext);
 
+  // Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
+  const [modalCourseContent, setModalCourseContent] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const fetchEnrolledStudents = async () => {
     try {
       const { data } = await axios.get(
@@ -29,7 +35,6 @@ const AllStudentEnrolled = () => {
         setStudents(data.enrolledStudents);
         setFilteredStudents(data.enrolledStudents);
 
-        // Extract unique courses for filter
         const uniqueCourses = [...new Map(
           data.enrolledStudents.map(item => [item.courseId, { id: item.courseId, title: item.courseTitle }])
         ).values()];
@@ -52,12 +57,10 @@ const AllStudentEnrolled = () => {
 
     let filtered = [...students];
 
-    // Filter by course
     if (courseFilter !== 'all') {
       filtered = filtered.filter(enrollment => enrollment.courseId === courseFilter);
     }
 
-    // Filter by search term
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(enrollment =>
@@ -70,19 +73,134 @@ const AllStudentEnrolled = () => {
     setFilteredStudents(filtered);
   }, [searchTerm, courseFilter, students]);
 
+  // -- Progress Management Helpers --
+
+  const openProgressModal = async (student) => {
+    setSelectedEnrollment(student);
+    setModalCourseContent(null);
+    setShowModal(true);
+
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/educator/course/${student.courseId}`, { headers: { atoken } });
+      if (data.success) {
+        setModalCourseContent(data.course.courseContent);
+      } else {
+        toast.error("Failed to load course details");
+      }
+    } catch (error) {
+      toast.error("Error fetching course details");
+    }
+  };
+
+  const handleProgressUpdate = async ({ lectureId, markAsCompleted, chapterId, isCourseCompleted }) => {
+    if (!selectedEnrollment) return;
+    setIsUpdating(true);
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/educator/update-student-progress`, {
+        userId: selectedEnrollment.student._id,
+        courseId: selectedEnrollment.courseId,
+        lectureId,
+        chapterId,
+        markAsCompleted,
+        isCourseCompleted
+      }, { headers: { atoken } });
+
+      if (data.success) {
+        const updatedLectures = data.progress.lectureCompleted;
+        const isFinished = data.progress.completed;
+        const certificateUrl = data.certificateUrl || data.progress.certificateUrl;
+
+        const updatedStudent = {
+          ...selectedEnrollment,
+          completedLectures: updatedLectures,
+          progress: isFinished ? "Completed" : "On Going",
+          quizPassed: data.progress.quizPassed,
+          quizTaken: data.progress.quizTaken,
+          quizScore: data.progress.quizScore,
+          certificateUrl: certificateUrl,
+          progressPercentage: data.progressPercentage
+        };
+
+        setSelectedEnrollment(updatedStudent);
+
+        setStudents(students.map(s =>
+          s.student._id === selectedEnrollment.student._id && s.courseId === selectedEnrollment.courseId
+            ? {
+              ...s,
+              completedLectures: updatedLectures,
+              progress: isFinished ? "Completed" : "On Going",
+              quizPassed: data.progress.quizPassed,
+              quizTaken: data.progress.quizTaken,
+              quizScore: data.progress.quizScore,
+              certificateUrl: certificateUrl,
+              progressPercentage: data.progressPercentage
+            }
+            : s
+        ));
+
+        toast.success(isCourseCompleted === true ? "Course Marked Completed (Certificate Generated)" : isCourseCompleted === false ? "Course Unmarked" : chapterId ? "Chapter Updated" : "Progress Updated");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleGenerateCertificate = async (student) => {
+    try {
+      toast.loading("Generating Certificate...");
+      const { data } = await axios.post(`${backendUrl}/api/educator/student-certificate`, {
+        userId: student.student._id,
+        courseId: student.courseId
+      }, { headers: { atoken } });
+
+      toast.dismiss();
+      if (data.success) {
+        window.open(data.certificateUrl, "_blank");
+        fetchEnrolledStudents();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error(error.message);
+    }
+  };
+
+  const handleRetakeQuiz = async (student) => {
+    if (!window.confirm(`Are you sure you want to reset progress for ${student.student.name}?`)) return;
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/educator/reset-student-progress`, {
+        userId: student.student._id,
+        courseId: student.courseId
+      }, { headers: { atoken } });
+
+      if (data.success) {
+        toast.success("Progress reset successfully");
+        fetchEnrolledStudents();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const getProgressColor = (progress) => {
     if (progress === 'Completed') return 'bg-green-100 text-green-800';
     return 'bg-blue-100 text-blue-800';
   };
 
   const calculateStats = () => {
-    if (!students) return { total: 0, completed: 0, ongoing: 0, revenue: 0 };
-
+    const list = filteredStudents || [];
     return {
-      total: students.length,
-      completed: students.filter(s => s.progress === 'Completed').length,
-      ongoing: students.filter(s => s.progress === 'On Going').length,
-      revenue: students.reduce((sum, s) => sum + (s.amount || 0), 0)
+      total: list.length,
+      completed: list.filter(s => s.progress === 'Completed').length,
+      ongoing: list.filter(s => s.progress === 'On Going').length,
+      revenue: list.reduce((sum, s) => sum + (s.amount || 0), 0)
     };
   };
 
@@ -95,7 +213,6 @@ const AllStudentEnrolled = () => {
           <h1 className="text-2xl font-bold text-gray-800">Student Enrollments</h1>
 
           <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-            {/* Search Input */}
             <input
               type="text"
               placeholder="Search by student or course..."
@@ -104,7 +221,6 @@ const AllStudentEnrolled = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-64"
             />
 
-            {/* Course Filter */}
             <select
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
@@ -151,7 +267,8 @@ const AllStudentEnrolled = () => {
                 <th className="px-4 py-3 font-semibold">Course</th>
                 <th className="px-4 py-3 font-semibold">Enrolled Date</th>
                 <th className="px-4 py-3 font-semibold">Progress</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold text-center">Control</th>
+                <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -180,32 +297,65 @@ const AllStudentEnrolled = () => {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-gray-700">{student.courseTitle}</span>
-                    </td>
-
                     <td className="px-4 py-3 text-gray-600">
                       {new Date(student.purchaseDate).toLocaleDateString()}
                     </td>
 
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div className="w-16 bg-gray-200 rounded-full h-1.5">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
-                            style={{ width: `${student.progressPercentage || 0}%` }}
+                            className="bg-blue-600 h-1.5 rounded-full transition-all"
+                            style={{ width: `${student.progressPercentage || (student.progress === 'Completed' ? 100 : 0)}%` }}
                           ></div>
                         </div>
-                        <span className="text-xs text-gray-600">
-                          {student.progressPercentage || 0}%
+                        <span className="text-[10px] text-gray-600">
+                          {student.completedCount !== undefined && student.totalLectures !== undefined 
+                            ? `${student.completedCount}/${student.totalLectures} (${student.progressPercentage}%)`
+                            : `${student.progressPercentage}%`
+                          }
                         </span>
                       </div>
                     </td>
 
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => openProgressModal(student)}
+                        className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-xs font-bold shadow-sm transition active:scale-95"
+                      >
+                        Manage
+                      </button>
+                    </td>
+
                     <td className="px-4 py-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getProgressColor(student.progress)}`}>
-                        {student.progress}
-                      </span>
+                      <div className="flex gap-2">
+                        {student.certificateUrl ? (
+                          <a
+                            href={student.certificateUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-[10px] font-semibold border border-blue-200"
+                          >
+                            PDF
+                          </a>
+                        ) : student.quizPassed ? (
+                          <button
+                            onClick={() => handleGenerateCertificate(student)}
+                            className="px-3 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-[10px] font-semibold border border-green-200"
+                          >
+                            Cert
+                          </button>
+                        ) : student.quizTaken && !student.quizPassed ? (
+                          <button
+                            onClick={() => handleRetakeQuiz(student)}
+                            className="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-[10px] font-semibold border border-red-200"
+                          >
+                            Reset
+                          </button>
+                        ) : (
+                          <span className="text-gray-400 text-[10px] italic">In Progress</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -214,14 +364,94 @@ const AllStudentEnrolled = () => {
           </table>
         </div>
 
-        {/* Results Count */}
         <div className="mt-4 text-sm text-gray-600">
           Showing {filteredStudents.length} of {students.length} enrollments
         </div>
       </div>
+
+      {/* Progress Modal (Replicated from StudentEnrolled) */}
+      {showModal && selectedEnrollment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Admin Control: Progress</h2>
+              <button onClick={() => { setShowModal(false); window.location.reload(); }} className="text-gray-500 hover:text-red-500">✕</button>
+            </div>
+
+            <div className="mb-4 flex justify-between items-end bg-gray-50 p-3 rounded-lg border border-gray-200">
+              <div>
+                <p className="text-sm text-gray-600">Student: <span className="font-semibold text-gray-800">{selectedEnrollment.student.name}</span></p>
+                <p className="text-sm text-gray-600">Course: <span className="font-semibold text-gray-800">{selectedEnrollment.courseTitle}</span></p>
+              </div>
+              <button
+                disabled={isUpdating}
+                onClick={() => handleProgressUpdate({ isCourseCompleted: selectedEnrollment.progress !== "Completed" })}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200"
+                    : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                  }`}
+              >
+                {selectedEnrollment.progress === "Completed" ? "Unmark Course Completed" : "Mark Full Course Completed"}
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {modalCourseContent ? (
+                modalCourseContent.map((chapter, cIndex) => (
+                  <div key={chapter.chapterId} className="border rounded-md p-3 bg-gray-50 group/chap transition hover:border-blue-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold text-gray-700">{cIndex + 1}. {chapter.chapterTitle}</h3>
+                      <button
+                        disabled={isUpdating}
+                        onClick={() => {
+                          const allChapLecIds = chapter.chapterContent.map(l => l.lectureId);
+                          const allDone = allChapLecIds.every(id => selectedEnrollment.completedLectures?.includes(id));
+                          handleProgressUpdate({ chapterId: chapter.chapterId, markAsCompleted: !allDone });
+                        }}
+                        className="text-[10px] px-2 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded hover:bg-indigo-600 hover:text-white transition"
+                      >
+                        {chapter.chapterContent.every(l => selectedEnrollment.completedLectures?.includes(l.lectureId))
+                          ? "Unmark Chapter"
+                          : "Mark Chapter"}
+                      </button>
+                    </div>
+                    <div className="space-y-2 ml-2">
+                      {chapter.chapterContent.map((lecture, lIndex) => {
+                        const isCompleted = selectedEnrollment.completedLectures?.includes(lecture.lectureId);
+                        return (
+                          <div key={lecture.lectureId} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={isCompleted}
+                              disabled={isUpdating}
+                              onChange={(e) => handleProgressUpdate({ lectureId: lecture.lectureId, markAsCompleted: e.target.checked })}
+                              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span className={`text-sm ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                              {lIndex + 1}. {lecture.lectureTitle}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-10"><Loading /></div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button onClick={() => { setShowModal(false); window.location.reload(); }} className="px-4 py-2 bg-gray-200 rounded text-gray-700 hover:bg-gray-300">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   ) : (
-    <Loading />
+    <div className="h-screen flex items-center justify-center"><Loading /></div>
   );
 };
 
