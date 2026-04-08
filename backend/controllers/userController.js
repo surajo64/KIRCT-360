@@ -147,10 +147,18 @@ export const getUserData = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { userId, name, phone, email, gender, address, dob, nin } = req.body
+    const {
+      userId, name, phone, email, gender, address, dob, nin,
+      city, country, organization, designation, background,
+      benefitFromWorkshop, professionalGrowth
+    } = req.body
     const imageFile = req.file
 
-    await User.findByIdAndUpdate(userId, { name, phone, nin, email, address, gender, dob })
+    await User.findByIdAndUpdate(userId, {
+      name, phone, nin, email, address, gender, dob,
+      city, country, organization, designation, background,
+      benefitFromWorkshop, professionalGrowth
+    })
 
     if (imageFile) {
       //upload image to cloudinary
@@ -159,7 +167,7 @@ export const updateProfile = async (req, res) => {
       await User.findByIdAndUpdate(userId, { image: imageUrl })
     }
 
-    res.json({ success: true, message: 'Profile Updated Successifull' })
+    res.json({ success: true, message: 'Profile Updated Successfully' })
 
   } catch (error) {
     console.log(error);

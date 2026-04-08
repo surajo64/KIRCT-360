@@ -36,6 +36,7 @@ const Navbar = () => {
   const [editMode, setEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
   const [isLoading, setIsLoading] = useState(false);
+  const [profileKey, setProfileKey] = useState(0); // force re-render after save
 
   // Local form state for editing
   const [formData, setFormData] = useState({
@@ -45,7 +46,14 @@ const Navbar = () => {
     nin: "",
     dob: "",
     gender: "",
-    address: ""
+    address: "",
+    city: "",
+    country: "",
+    organization: "",
+    designation: "",
+    background: "",
+    benefitFromWorkshop: "",
+    professionalGrowth: ""
   });
 
   // Sync formData with userData when modal opens or userData changes
@@ -58,10 +66,17 @@ const Navbar = () => {
         nin: userData.nin || "",
         dob: userData.dob || "",
         gender: userData.gender || "",
-        address: userData.address || ""
+        address: userData.address || "",
+        city: userData.city || "",
+        country: userData.country || "",
+        organization: userData.organization || "",
+        designation: userData.designation || "",
+        background: userData.background || "",
+        benefitFromWorkshop: userData.benefitFromWorkshop || "",
+        professionalGrowth: userData.professionalGrowth || ""
       });
     }
-  }, [userData, open]);
+  }, [userData, open, profileKey]);
 
 
   const clear = () => {
@@ -140,6 +155,13 @@ const Navbar = () => {
     apiFormData.append("dob", formData.dob);
     apiFormData.append("gender", formData.gender);
     apiFormData.append("address", formData.address);
+    apiFormData.append("city", formData.city);
+    apiFormData.append("country", formData.country);
+    apiFormData.append("organization", formData.organization);
+    apiFormData.append("designation", formData.designation);
+    apiFormData.append("background", formData.background);
+    apiFormData.append("benefitFromWorkshop", formData.benefitFromWorkshop);
+    apiFormData.append("professionalGrowth", formData.professionalGrowth);
     if (image) apiFormData.append("image", image);
 
     try {
@@ -151,8 +173,9 @@ const Navbar = () => {
 
       if (data.success) {
         toast.success("Profile updated!");
+        await userProfile();          // wait for fresh userData
+        setProfileKey(k => k + 1);   // force view re-render
         setEditMode(false);
-        userProfile();
       } else {
         toast.error(data.message);
       }
@@ -642,6 +665,15 @@ const Navbar = () => {
                   className="w-full mb-3 border px-3 py-2 rounded"
                 />
 
+                <div className="text-right mb-3">
+                  <span
+                    onClick={() => { setShowAuthModal(false); navigate('/forgot-password'); }}
+                    className="text-sm text-blue-600 hover:underline cursor-pointer"
+                  >
+                    Forgot Password?
+                  </span>
+                </div>
+
                 <button
                   onClick={onSubmitHandler}
                   className="bg-blue-600 text-white w-full py-2 rounded mb-2"
@@ -680,85 +712,266 @@ const Navbar = () => {
 
       {/* Profile Modal */}
       {open && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-fadeIn">
-            <button
-              className="absolute top-3 right-3 text-red-500 hover:text-red-700 text-lg"
-              onClick={() => setOpen(false)}
-            >
-              ✕
-            </button>
-            {/* Profile Fields */}
-            <div className="mt-4 text-gray-700 text-sm space-y-2">
-              {
-                editMode ?
-                  <label htmlFor="image">
-                    <div className="w-32 h-32 mx-auto relative cursor-pointer">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative flex flex-col" style={{ maxHeight: '90vh' }}>
+
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-t-2xl px-6 py-4 flex items-center justify-between shrink-0">
+              <h2 className="text-white font-bold text-lg">My Profile</h2>
+              <button
+                className="text-white hover:text-blue-200 transition text-xl leading-none"
+                onClick={() => { setOpen(false); setEditMode(false); }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div key={profileKey} className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
+
+              {/* Avatar */}
+              <div className="flex flex-col items-center gap-2">
+                {editMode ? (
+                  <label htmlFor="image" className="cursor-pointer group">
+                    <div className="relative w-24 h-24">
                       <img
-                        src={image ? URL.createObjectURL(image) : userData?.image} alt="Profile Preview"
-                        className="w-32 h-32 rounded-full border-4 border-blue-500 object-cover" />
+                        src={image ? URL.createObjectURL(image) : userData?.image || assets.profile_pic}
+                        alt="Profile Preview"
+                        className="w-24 h-24 rounded-full border-4 border-blue-500 object-cover group-hover:opacity-80 transition"
+                      />
+                      <span className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 text-xs shadow">
+                        ✏️
+                      </span>
                     </div>
-                    <input type="file" id="image" hidden onChange={(e) => setImage(e.target.files[0])} />
+                    <p className="text-xs text-gray-400 mt-1 text-center">Click to change photo</p>
+                    <input type="file" id="image" hidden accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
                   </label>
-                  : <img src={userData?.image || assets.profile_pic} alt="Profile" className="w-32 h-32 mx-auto rounded-full border-4 border-blue-500 object-cover" />
-              }
+                ) : (
+                  <img
+                    src={userData?.image || assets.profile_pic}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full border-4 border-blue-500 object-cover"
+                  />
+                )}
+                {!editMode && <h3 className="font-bold text-gray-800 text-xl">{userData?.name}</h3>}
+              </div>
 
-              {editMode ? (
-                <input type="text" value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} className="border p-2 w-full rounded" placeholder="Full Name" />
-              ) : (
-                <h2 className="text-2xl font-bold text-center">{userData?.name}</h2>
-              )}
+              {/* ── Section: Personal Info ── */}
+              <div>
+                <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-2 border-b border-blue-100 pb-1">Personal Information</p>
+                <div className="space-y-2 text-sm text-gray-700">
 
-              {editMode ? (
-                <input type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} className="border p-2 w-full rounded" placeholder="Email" />
-              ) : (
-                <p><strong>Email:</strong> {userData.email}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Full Name</label>
+                      <input type="text" value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="Full Name" />
+                    </div>
+                  ) : <p><strong>Name:</strong> {userData?.name}</p>}
 
-              {editMode ? (
-                <input type="tel" value={formData.phone} onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))} className="border p-2 w-full rounded" placeholder="Phone" />
-              ) : (
-                <p><strong>Phone:</strong> {userData.phone}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Email</label>
+                      <input type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="Email" />
+                    </div>
+                  ) : <p><strong>Email:</strong> {userData?.email}</p>}
 
-              {editMode ? (
-                <input type="text" value={formData.nin} onChange={(e) => setFormData(prev => ({ ...prev, nin: e.target.value }))} className="border p-2 w-full rounded" placeholder="NIN" />
-              ) : (
-                <p><strong>NIN:</strong> {userData.nin}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Phone</label>
+                      <input type="tel" value={formData.phone} onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="Phone" />
+                    </div>
+                  ) : <p><strong>Phone:</strong> {userData?.phone}</p>}
 
-              {editMode ? (
-                <input type="date" value={formData.dob ? new Date(formData.dob).toISOString().split("T")[0] : ""} onChange={(e) => setFormData(prev => ({ ...prev, dob: e.target.value }))} className="border p-2 w-full rounded" />
-              ) : (
-                <p><strong>DOB:</strong> {userData.dob ? new Date(userData.dob).toDateString() : "N/A"}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">NIN</label>
+                      <input type="text" value={formData.nin} onChange={(e) => setFormData(prev => ({ ...prev, nin: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="NIN" />
+                    </div>
+                  ) : <p><strong>NIN:</strong> {userData?.nin}</p>}
 
-              {editMode ? (
-                <select value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))} className="border p-2 w-full rounded">
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              ) : (
-                <p><strong>Gender:</strong> {userData.gender}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Date of Birth</label>
+                      <input type="date" value={formData.dob ? new Date(formData.dob).toISOString().split("T")[0] : ""} onChange={(e) => setFormData(prev => ({ ...prev, dob: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" />
+                    </div>
+                  ) : <p><strong>DOB:</strong> {userData?.dob ? new Date(userData.dob).toDateString() : "N/A"}</p>}
 
-              {editMode ? (
-                <textarea value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))} className="border p-2 w-full rounded" rows="3" placeholder="Address" />
-              ) : (
-                <p><strong>Address:</strong> {userData.address}</p>
-              )}
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Gender</label>
+                      <select value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+                  ) : <p><strong>Gender:</strong> {userData?.gender}</p>}
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Address</label>
+                      <textarea value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" rows="2" placeholder="Address" />
+                    </div>
+                  ) : <p><strong>Address:</strong> {userData?.address}</p>}
+
+                  {editMode ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-0.5">City</label>
+                        <input type="text" value={formData.city} onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="City" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-0.5">Country</label>
+                        <input type="text" value={formData.country} onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="Country" />
+                      </div>
+                    </div>
+                  ) : (
+                    <p><strong>Location:</strong> {[userData?.city, userData?.country].filter(Boolean).join(", ") || "N/A"}</p>
+                  )}
+
+                </div>
+              </div>
+
+              {/* ── Section: Professional Info ── */}
+              <div>
+                <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-2 border-b border-blue-100 pb-1">Professional Information</p>
+                <div className="space-y-2 text-sm text-gray-700">
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Organization / Institution</label>
+                      <input type="text" value={formData.organization} onChange={(e) => setFormData(prev => ({ ...prev, organization: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="e.g. University of Kano" />
+                    </div>
+                  ) : <p><strong>Organization:</strong> {userData?.organization || "N/A"}</p>}
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">Current Position / Designation</label>
+                      <input type="text" value={formData.designation} onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))} className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" placeholder="e.g. Research Officer" />
+                    </div>
+                  ) : <p><strong>Designation:</strong> {userData?.designation || "N/A"}</p>}
+
+                </div>
+              </div>
+
+              {/* ── Section: Workshop Information ── */}
+              <div>
+                <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-2 border-b border-blue-100 pb-1">Workshop Information</p>
+                <div className="space-y-3 text-sm text-gray-700">
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">
+                        Background & Area of Work <span className="text-gray-400">(max 150 words)</span>
+                      </label>
+                      <textarea
+                        value={formData.background}
+                        onChange={(e) => {
+                          const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                          if (words.length <= 150) setFormData(prev => ({ ...prev, background: e.target.value }));
+                        }}
+                        className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm resize-none"
+                        rows="4"
+                        placeholder="Briefly describe your background and area of work..."
+                      />
+                      <p className="text-right text-xs text-gray-400 mt-0.5">
+                        {formData.background.trim() ? formData.background.trim().split(/\s+/).filter(Boolean).length : 0} / 150 words
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="font-semibold text-gray-600 mb-1">Background & Area of Work:</p>
+                      <p className="text-gray-600 leading-relaxed">{userData?.background || <span className="text-gray-400 italic">Not provided</span>}</p>
+                    </div>
+                  )}
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">
+                        Expected Benefit from Workshop <span className="text-gray-400">(max 200 words)</span>
+                      </label>
+                      <textarea
+                        value={formData.benefitFromWorkshop}
+                        onChange={(e) => {
+                          const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                          if (words.length <= 200) setFormData(prev => ({ ...prev, benefitFromWorkshop: e.target.value }));
+                        }}
+                        className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm resize-none"
+                        rows="4"
+                        placeholder="Explain how you expect to benefit from this workshop..."
+                      />
+                      <p className="text-right text-xs text-gray-400 mt-0.5">
+                        {formData.benefitFromWorkshop.trim() ? formData.benefitFromWorkshop.trim().split(/\s+/).filter(Boolean).length : 0} / 200 words
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="font-semibold text-gray-600 mb-1">Expected Benefit from Workshop:</p>
+                      <p className="text-gray-600 leading-relaxed">{userData?.benefitFromWorkshop || <span className="text-gray-400 italic">Not provided</span>}</p>
+                    </div>
+                  )}
+
+                  {editMode ? (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-0.5">
+                        Contribution to Professional Growth <span className="text-gray-400">(max 200 words)</span>
+                      </label>
+                      <textarea
+                        value={formData.professionalGrowth}
+                        onChange={(e) => {
+                          const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                          if (words.length <= 200) setFormData(prev => ({ ...prev, professionalGrowth: e.target.value }));
+                        }}
+                        className="border border-gray-200 bg-gray-50 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm resize-none"
+                        rows="4"
+                        placeholder="How do you anticipate this workshop will contribute to your professional growth..."
+                      />
+                      <p className="text-right text-xs text-gray-400 mt-0.5">
+                        {formData.professionalGrowth.trim() ? formData.professionalGrowth.trim().split(/\s+/).filter(Boolean).length : 0} / 200 words
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="font-semibold text-gray-600 mb-1">Contribution to Professional Growth:</p>
+                      <p className="text-gray-600 leading-relaxed">{userData?.professionalGrowth || <span className="text-gray-400 italic">Not provided</span>}</p>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
             </div>
 
-            <div className="mt-4 flex justify-center">
+            {/* Sticky Footer Buttons */}
+            <div className="shrink-0 px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
               {editMode ? (
-                <button onClick={updateProfile} disabled={isSubmitting} className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:bg-gray-400">
-                  {isSubmitting ? "Saving..." : "Save"}
+                <>
+                  <button
+                    onClick={() => { setEditMode(false); }}
+                    className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={updateProfile}
+                    disabled={isSubmitting}
+                    className="px-5 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Saving...</>
+                    ) : "Save Changes"}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="px-5 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  ✏️ Edit Profile
                 </button>
-              ) : (
-                <button onClick={() => setEditMode(true)} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Edit Profile</button>
               )}
             </div>
+
           </div>
         </div>
       )}
