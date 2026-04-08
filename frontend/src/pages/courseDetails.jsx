@@ -88,8 +88,8 @@ const courseDetails = () => {
       attendanceType === 'Physical' && courseData.coursePricePhysical > 0
         ? courseData.coursePricePhysical
         : attendanceType === 'Virtual' && courseData.coursePriceVirtual > 0
-        ? courseData.coursePriceVirtual
-        : courseData.coursePrice;
+          ? courseData.coursePriceVirtual
+          : courseData.coursePrice;
     return withDiscount ? base * (1 - courseData.discount / 100) : base;
   };
 
@@ -312,7 +312,7 @@ const CourseCard = ({
       {/* Price urgency */}
       <div className="flex items-center gap-1.5 text-sm text-red-500">
         <img className="w-3.5 h-3.5" src={assets.time_left_clock_icon} alt="clock" />
-        <span><strong>5 Days</strong> Left at this Price</span>
+        <span><strong>Application Deadline:</strong> 7th May 2026</span>
       </div>
 
       {/* Price row */}
@@ -337,11 +337,10 @@ const CourseCard = ({
             <button
               key={type}
               onClick={() => setAttendanceType(type)}
-              className={`flex-1 py-2 text-sm rounded-lg border font-medium transition ${
-                attendanceType === type
+              className={`flex-1 py-2 text-sm rounded-lg border font-medium transition ${attendanceType === type
                   ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
-              }`}
+                }`}
             >
               {type} Class
             </button>
