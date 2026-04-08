@@ -23,6 +23,7 @@ const AppContextProvider = (props) => {
   const [allStudents, setAllStudents] = useState([])
   const [educatorCourses, setEducatorCourses] = useState([])
   const [enrolledCourses, setEnrolledCourses] = useState([])
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
 
   const logout = useCallback(() => {
@@ -181,7 +182,8 @@ const AppContextProvider = (props) => {
     currencySymbol, logout, adminData, setAdminData, cost, setCourse,
     fetchUserEnrolledCourse, token, setToken, fetchEducatorCourses,
     backendUrl, courseChapterTime, atoken, setAtoken, setEnrolledCourses,
-    userData, setUserData, allCourses, fetchAllStudents, allStudents
+    userData, setUserData, allCourses, fetchAllStudents, allStudents,
+    showAuthModal, setShowAuthModal
   }
 
 

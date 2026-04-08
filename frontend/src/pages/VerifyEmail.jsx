@@ -28,7 +28,13 @@ const VerifyEmail = () => {
                     
                     // Redirect after 3 seconds
                     setTimeout(() => {
-                        navigate('/');
+                        const redirectPath = localStorage.getItem('redirectPath');
+                        if (redirectPath) {
+                            localStorage.removeItem('redirectPath');
+                            navigate(redirectPath);
+                        } else {
+                            navigate('/');
+                        }
                     }, 3000);
                 } else {
                     setStatus('error');
@@ -84,7 +90,7 @@ const VerifyEmail = () => {
 
                 {status === 'success' && (
                     <p className="text-sm text-gray-500 animate-pulse">
-                        Redirecting you to the home page...
+                        Redirecting you {localStorage.getItem('redirectPath') ? 'back to the course...' : 'to the home page...'}
                     </p>
                 )}
 

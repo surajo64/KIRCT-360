@@ -13,7 +13,7 @@ const courseDetails = () => {
   const {
     currencySymbol, calculateRating, courseChapterTime,
     numberOfLecture, courseDuration, backendUrl, token,
-    userData,
+    userData, setShowAuthModal
   } = useContext(AppContext);
 
   const { id } = useParams();
@@ -59,7 +59,11 @@ const courseDetails = () => {
 
   /* ── enrol ── */
   const enrollCourse = async () => {
-    if (!userData) return toast.warning('Please Login To Enroll!');
+    if (!userData) {
+      setShowAuthModal(true);
+      localStorage.setItem('redirectPath', window.location.pathname);
+      return toast.warning('Please Login To Enroll!');
+    }
     if (isAlreadEnrolled) return toast.warning('Already Enrolled!');
     if (isEnrolling) return;
     setIsEnrolling(true);

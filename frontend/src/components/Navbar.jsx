@@ -13,12 +13,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const { token, setToken, userData, setUserData, userProfile, backendUrl, logout } = useContext(AppContext);
+  const { token, setToken, userData, setUserData, userProfile, backendUrl, logout, showAuthModal, setShowAuthModal } = useContext(AppContext);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
 
-  // Auth Modal State
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  // Auth Modal State (now from context)
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
