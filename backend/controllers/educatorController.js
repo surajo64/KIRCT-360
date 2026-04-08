@@ -223,6 +223,7 @@ export const updateCourse = async (req, res) => {
     existingCourse.classSchedule = parsedCourseData.classSchedule ?? existingCourse.classSchedule;
     existingCourse.discount = parsedCourseData.discount ?? existingCourse.discount;
     existingCourse.courseContent = parsedCourseData.courseContent || existingCourse.courseContent;
+    existingCourse.applicationDeadline = parsedCourseData.applicationDeadline ?? existingCourse.applicationDeadline;
 
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path);

@@ -30,6 +30,7 @@ const UpdateCourse = ({ course }) => {
   const [meetingUrl, setMeetingUrl] = useState(educatorCourses?.meetingUrl || "");
   const [classSchedule, setClassSchedule] = useState(educatorCourses?.classSchedule || "");
   const [courseDescription, setCourseDescription] = useState(educatorCourses?.courseDescription || "");
+  const [applicationDeadline, setApplicationDeadline] = useState(educatorCourses?.applicationDeadline || "");
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -181,6 +182,7 @@ const UpdateCourse = ({ course }) => {
       setMeetingUrl(educatorCourses.meetingUrl || "");
       setClassSchedule(educatorCourses.classSchedule || "");
       setDiscount(educatorCourses.discount || 0);
+      setApplicationDeadline(educatorCourses.applicationDeadline ? new Date(educatorCourses.applicationDeadline).toISOString().split('T')[0] : "");
 
       // Ensure chapters are set correctly
       if (educatorCourses.courseContent && Array.isArray(educatorCourses.courseContent)) {
@@ -221,6 +223,7 @@ const UpdateCourse = ({ course }) => {
         classSchedule,
         discount: Number(discount),
         courseContent: chapters,
+        applicationDeadline: applicationDeadline,
       };
 
       const formData = new FormData();
@@ -335,6 +338,20 @@ const UpdateCourse = ({ course }) => {
             </p>
           </div>
         )}
+
+        {/* Application Deadline */}
+        <div>
+          <label className="block text-gray-700 mb-2 font-semibold">Application Deadline</label>
+          <input
+            type="date"
+            value={applicationDeadline}
+            onChange={e => setApplicationDeadline(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Last date for students to register.
+          </p>
+        </div>
 
         {/* Virtual Details */}
         {(courseMode === 'Virtual' || courseMode === 'Both') && (

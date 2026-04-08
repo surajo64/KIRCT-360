@@ -27,6 +27,7 @@ const AddCourse = () => {
   const [courseAddress, setCourseAddress] = useState('');
   const [meetingUrl, setMeetingUrl] = useState('');
   const [classSchedule, setClassSchedule] = useState('');
+  const [applicationDeadline, setApplicationDeadline] = useState('');
   const [showPopup, setShowPopup] = useState(false)
   const [currentChapterId, setCurrentChapterId] = useState(null)
   const [lectureDetails, setLectureDetails] = useState({
@@ -124,6 +125,7 @@ const AddCourse = () => {
         classSchedule,
         discount: Number(discount),
         courseContent: chapters,
+        applicationDeadline: applicationDeadline,
       };
 
       const formData = new FormData();
@@ -145,6 +147,7 @@ const AddCourse = () => {
         setCourseAddress("");
         setMeetingUrl("");
         setClassSchedule("");
+        setApplicationDeadline("");
         quillReff.current.root.innerHTML = "";
         toast.success("Course added successfully!");
       } else {
@@ -240,6 +243,20 @@ const AddCourse = () => {
                 </p>
               </div>
             )}
+
+            {/* Application Deadline */}
+            <div>
+              <label className="block text-gray-700 mb-1 text-sm font-semibold">Application Deadline</label>
+              <input
+                type="date"
+                value={applicationDeadline}
+                onChange={e => setApplicationDeadline(e.target.value)}
+                className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Last date for students to register.
+              </p>
+            </div>
           </div>
 
           {/* RIGHT COLUMN: Pricing, Media & Content */}

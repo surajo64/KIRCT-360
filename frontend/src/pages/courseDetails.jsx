@@ -312,7 +312,16 @@ const CourseCard = ({
       {/* Price urgency */}
       <div className="flex items-center gap-1.5 text-sm text-red-500">
         <img className="w-3.5 h-3.5" src={assets.time_left_clock_icon} alt="clock" />
-        <span><strong>Application Deadline:</strong> 7th May 2026</span>
+        <span>
+          <strong>Application Deadline:</strong>{" "}
+          {courseData.applicationDeadline 
+            ? new Date(courseData.applicationDeadline).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              })
+            : "To be announced"}
+        </span>
       </div>
 
       {/* Price row */}

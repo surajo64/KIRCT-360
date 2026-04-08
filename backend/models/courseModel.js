@@ -38,7 +38,8 @@ const courseSchema = new mongoose.Schema({
   courseContent: [chapterSchema],
   courseRatings: [{ userId: { type: String }, rating: { type: Number, min: 1, max: 5 } }],
   educator: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
-  enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  applicationDeadline: { type: Date }
 
 }, { timestamps: true, minimize: false })
 
