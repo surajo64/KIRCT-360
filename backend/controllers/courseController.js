@@ -18,8 +18,12 @@ export const getAllCourse = async (req,res) => {
 
 export const getCourseId = async (req,res) => {
   const {id} = req.params 
-  /*try {*/
+  try {
     const courseData = await Course.findById(id).populate({path: 'educator'})
+    
+    if (!courseData) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
 
     // remove lecture Url when is preview is fales
     courseData.courseContent.forEach(chapter => {
@@ -31,7 +35,7 @@ export const getCourseId = async (req,res) => {
     })
 
     res.json({ success: true,courseData})
- /* } catch (error) {
+  } catch (error) {
     res.json({ success: false, message: error.message })
-  }*/
+  }
 }
