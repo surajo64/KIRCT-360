@@ -263,7 +263,7 @@ const AboutDG = () => {
               
               <div className="bg-white/10 p-8 rounded-2xl backdrop-blur-sm">
                 <blockquote className="text-xl italic text-blue-100 leading-relaxed">
-                  "My vision is to make KIRCT one of the top high-performing health research centers in the world in the area of innovation, discovery, entrepreneurship, and impact. This is possible given the talent, assets, and social capital available at KIRCT."
+                  "My vision is to make KIRCT one of the top high-performing health research centres in the world in the area of innovation, discovery, entrepreneurship, and impact. This is possible given the talent, assets, and social capital available at KIRCT."
                 </blockquote>
                 <div className="mt-6 text-white font-semibold">
                   — Professor Hamisu Salihu
