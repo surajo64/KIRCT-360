@@ -49,8 +49,8 @@ const Hospital = () => {
           </p>
           <p className="text-gray-700 leading-relaxed">
             The hospital operates daily from <strong>8:00 AM to 6:00 PM (Monday to
-            Sunday)</strong>, with plans to expand to <strong>24-hour operations and
-            inpatient services by August 2024</strong>.
+              Sunday)</strong>, with plans to expand to <strong>24-hour operations and
+                inpatient services</strong>.
           </p>
         </div>
       </div>
