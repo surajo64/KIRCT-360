@@ -100,18 +100,7 @@ const Board = () => {
       image: images.ehma,
       role: "Trustee"
     },
-    {
-      id: 7,
-      name: "Prof. Hamisu Salihu",
-      title: "Director General & Chief Executive Officer",
-      credentials: "MD, PhD",
-      position: "Director General & CEO",
-      institution: "Kano Independent Research Centre Trust",
-      description: "Founding Director General and Chief Executive Officer responsible for the day-to-day management and leadership of KIRCT operations and research programs.",
-      detailedDescription: "The current and founding Director-General/CEO of KIRCT is Professor Hamisu Salihu (MD, PhD) who was previously the Director at Baylor College of Medicine Centre of Excellence (COE) in the United States of America (USA). He is a Professor of Medicine & Public Health, and a US-licensed physician with strong expertise in population-based research. As of February 2025, he had published about 500 peer-reviewed articles mostly in high-impact journals. Over the decades, he has brought to his research enterprise approximately 250 million US dollars in grant funding individually or collaboratively. These include grants funded by the NIH (National Institutes of Health), the CDC (Centers for Disease Control and Prevention), AHRQ (Agency for Healthcare Research and Quality) and HRSA (Health Resources and Services Administration), just to mention a few examples. The impact of his scientific contributions and leadership in research enterprise is reflected in national and international recognition. Earlier in his career, he was described by the New York Times as one of the world's leading researchers in stillbirth (New York Times, April 1, 2008). He was featured in Time Magazine as a pioneer in the epidemiology of the male biologic clock in humans (Time, April 22, 2013).",
-      image: images.dg,
-      role: "CEO"
-    },
+    
     {
       id: 8,
       name: "David Odiwo",

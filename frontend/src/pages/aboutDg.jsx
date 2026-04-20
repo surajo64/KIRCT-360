@@ -30,11 +30,7 @@ const AboutDG = () => {
       title: "Individuals Mentored",
       description: "Across various career stages"
     },
-    {
-      number: "15+",
-      title: "Years Leadership",
-      description: "In biomedical research"
-    }
+  
   ];
 
   const innovations = [
