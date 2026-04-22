@@ -132,9 +132,9 @@ const Team = () => {
       title: "Head of Business Development",
       image: Bus,
       description:
-        "Oversees hematology and clinical research focusing on sickle cell disease.",
+        "He delivers impactful solutions to KIRCT’s growth and partnership strategies across public and private sectors.",
       details:
-        "Dr. Idris specializes in hematology and clinical trials, leading a team focused on improving diagnostic and treatment outcomes in blood disorders.",
+        "A results-driven professional with a background in International Relations and experience in Business Development. He combines strategic thinking, cross-cultural communication, and market insight to build partnerships, identify growth opportunities, and drive success. Skilled in stakeholder engagement and navigating diverse environments, he delivers impactful solutions across both public and private sectors",
     },
   ];
 
@@ -159,7 +159,7 @@ const Team = () => {
         {/* Page Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4">
-            OUR <span className="text-blue-800">TEAM</span>
+            OUR <span className="text-blue-800">MANAGEMENT</span>
              <span className="text-red-600">.</span>
           </h2>
            <div className="w-24 h-1 bg-red-600 mx-auto mt-4 mb-6 rounded-full"></div>
