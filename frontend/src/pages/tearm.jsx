@@ -9,6 +9,7 @@ import Bus from "../assets/bus.png";
 import CMD from "../assets/cmd.png";
 import Acc from "../assets/denis.png";
 import ibrahimImage from "../assets/upload_area.png";
+import nasirimImage from "../assets/nasir.png";
 
 const Team = () => {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -77,13 +78,13 @@ const Team = () => {
     },
     {
       id: 7,
-      name: "Dr. Nasiru Abdullahi",
+      name: "Prof. Nasiru Abdullahi",
       title: "Head of Research Lab",
-      image: ibrahimImage,
+      image: nasirimImage,
       description:
-        "Oversees hematology and clinical research focusing on sickle cell disease.",
+        "His work focuses on advancing genomics research, with current interests spanning cancer genomics and maternal health–related genetic studies in Nigerian populations.",
       details:
-        "Dr. Idris specializes in hematology and clinical trials, leading a team focused on improving diagnostic and treatment outcomes in blood disorders.",
+        "Prof. Nasiru Abdullahi is a Professor of Biochemistry and Head of the Genomics and Molecular Biology Unit at the Kano Independent Research Centre Trust (KIRCT). He provides scientific and strategic leadership in the establishment and operationalization of genomics infrastructure, with a strong focus on building sustainable research capacity and training the next generation of scientists. He specializes in genomics and molecular biology, with expertise in next-generation sequencing and laboratory systems development. His work focuses on advancing genomics research, with current interests spanning cancer genomics and maternal health–related genetic studies in Nigerian populations.",
     },
      {
       id: 8,
