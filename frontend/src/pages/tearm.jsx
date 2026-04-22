@@ -47,7 +47,7 @@ const Team = () => {
         "A Cardiovascular and Thoracic Surgeon, an Associate Professor of Surgery and a healthcare entrepreneur. He completed a training in Cardiovascular and Thoracic Surgery in 2014 (in Nigeria, Ghana and India) and he currently offers specialized cardiovascular and Thoracic surgical services, training and research as well as engaging in healthcare entrepreneurship after obtaining a Masters in business Administration (specialization in entrepreneurship and venture creation) in 2020.",
     },
     {
-      id: 4,
+      id: 7,
       name: "Iliyasu Salihu",
       title: "Head Of Administration",
       image: Admin,
@@ -77,7 +77,7 @@ const Team = () => {
         "Prof. Hadiza Saidu drives key programs on cardiac research and advocacy for women’s health improvement across northern Nigeria.",
     },
     {
-      id: 7,
+      id: 4,
       name: "Prof. Nasiru Abdullahi",
       title: "Head of Research Lab",
       image: nasirimImage,

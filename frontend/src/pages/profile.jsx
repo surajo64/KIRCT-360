@@ -7,7 +7,7 @@ const Profile = () => {
       {/* Header Section */}
        <div className="text-center pt-10 mb-8">
                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-wide text-blue-800">
-                    CORPORATE <span className="text-blue-800">PROFILE</span><span className="text-red-600">.</span>
+                    CORPORATE <span className="text-blue-800">VALUES</span><span className="text-red-600">.</span>
                 </h2>
             </div>
             <div className="w-24 h-1 bg-red-600 mx-auto mt-4 mb-6 rounded-full"></div>

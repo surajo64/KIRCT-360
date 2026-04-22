@@ -250,7 +250,7 @@ const Navbar = () => {
         { name: "Our Management ", path: "/team" },
         { name: "Facility Description", path: "/facility" },
         { name: "Grant Management", path: "/grant" },
-        { name: "Corporate Profile", path: "/profile" },
+        { name: "Corporate Values", path: "/profile" },
         { name: "Meet Our DG", path: "/about-dg" },
         { name: "Board of Trustees", path: "/board" },
         { name: "KIRCT Ethics Committee", path: "/ethics-committee" },
