@@ -58,13 +58,13 @@ const Team = () => {
     },
      {
       id: 5,
-      name: "Hassana Kassim",
+      name: "Mrs. Hassana Kassim ",
       title: "Head of Human Resource",
       image: HR,
       description:
-        "Leads infectious disease research, focusing on malaria, TB, and HIV studies.",
+        " Mrs. Kassim is recognized for her strategic approach to people management and her commitment to building efficient, engaged, and high‑performing workforces.",
       details:
-        "Prof. Hamza is a physician and infectious disease expert with numerous research contributions in Nigeria’s public health ecosystem.",
+        "An accomplished Human Resources professional with over 19 years of combined experience spanning administration, client relations, and Human Resources across diverse industries. She holds a BSc in Business Administration, an MSc in Health Economics, and is currently completing an MBA in Human Resources. With more than seven years dedication to HR practice, she currently serves as a Human Resources Manager at KIRCT, where she oversees among others; end‑to‑end recruitment, staff welfare, employee relations, and training and development. Mrs. Kassim is recognized for her strategic approach to people management and her commitment to building efficient, engaged, and high‑performing workforces.",
     },
     {
       id: 6,
