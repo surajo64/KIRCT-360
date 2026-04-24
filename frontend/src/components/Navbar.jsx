@@ -99,13 +99,24 @@ const Navbar = () => {
         });
 
         if (data.success) {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          setToken(data.token);
+          
           setName("");
           setEmail("");
           setPhone("");
           setPassword("");
-          toast.success(data.message || "Account created! Please check your email to verify your account.");
+          toast.success(data.message || "Registration Successful!");
           setShowAuthModal(false);
-          setIsRegistering(false); // Switch back to login for next time
+          setIsRegistering(false);
+
+          // Redirect if needed
+          const redirectPath = localStorage.getItem('redirectPath');
+          if (redirectPath) {
+            localStorage.removeItem('redirectPath');
+            navigate(redirectPath);
+          }
         } else {
           toast.error(data.message);
         }
@@ -132,6 +143,13 @@ const Navbar = () => {
           setIdentifier(""); // Reset identifier
           setPassword("");
           toast.success("Login Success!");
+
+          // Redirect if needed
+          const redirectPath = localStorage.getItem('redirectPath');
+          if (redirectPath) {
+            localStorage.removeItem('redirectPath');
+            navigate(redirectPath);
+          }
         } else {
           toast.error(data.message);
         }

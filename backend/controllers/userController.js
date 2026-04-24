@@ -59,14 +59,28 @@ export const registerUser = async (req, res) => {
       email,
       phone,
       password: hashedPassword,
-      verificationToken
+      verificationToken,
+      isVerified: true
     });
 
     await newUser.save();
 
     await sendVerificationEmail(email, name, verificationToken);
 
-    res.json({ success: true, message: "Verification email sent! Please check your inbox." });
+    // Generate JWT
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.json({
+      success: true,
+      message: "Registration successful!",
+      token: token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+      },
+    });
 
   } catch (error) {
     res.status(500).json({ message: "Error registering user", error: error.message });
@@ -99,11 +113,6 @@ export const userLogin = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: "Invalid email or Password!" });
-    }
-
-    // Check if verified
-    if (!user.isVerified) {
-      return res.status(400).json({ success: false, message: "Please verify your email address to login." });
     }
 
     // Generate JWT
