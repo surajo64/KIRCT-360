@@ -41,19 +41,7 @@ const Board = () => {
       role: "Chairman",
       displayOrder: 1
     },
-    {
-      id: 8,
-      name: "David Odiwo",
-      title: "Executive Secretary",
-      credentials: "",
-      position: "Executive Secretary",
-      institution: "Kano Independent Research Centre Trust",
-      description: "Executive Secretary managing administrative operations and supporting the Board of Trustees and management in executing their duties.",
-      detailedDescription: "Principal Partner, David commenced his accounting career as an audit trainee in Anjous, Uku, Eweka and Co Chartered Accountants Benin City in 1983, he worked with S.S. Afemikhe and Co Chartered Accountants, Lagos from 1988 to 1990. Qualified as a Chartered Accountant (Institute of Chartered Accountants of Nigeria) in 1991 and joined Guinness Nigeria Plc as an Internal Auditor.He Worked with Commercial Trust bank Limited from 1992 to 1993 as an Internal Auditor and Operations Manager from 1994 to 1998 in the bank's Onitsha Branch. He also worked as a Consultant for Deo–Tseena Consulting and was General Manager Finance and Investments, Securities Trading & Investments Limited before becoming the principal partner of David Odiwo and Co (Chartered Accountants). He has over twenty years post qualification experience spanning Auditing, Consultancy, Taxation, Banking and financial services. His experience spans Auditing of Major companies as well as consulting in diverse sectors of the Nigerian economy such as value for money audits for major companies in the oil and gas industry as well as firms in the capital market. David holds an HND in accountancy from Auchi Polytechnic, Auchi. Edo state and is currently a fellow of the Institute of Chartered Accountants of Nigeria (ICAN) and an associate member of the Business Recovery and Insolvency Practitioners Association of Nigeria (BRIPAN).",
-      image: images.es,
-      role: "Executive Secretary",
-      displayOrder: 2
-    },
+    
     {
       id: 2,
       name: "Dr. Ibrahim Musa Idris",
