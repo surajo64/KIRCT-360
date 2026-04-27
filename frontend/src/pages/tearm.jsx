@@ -72,9 +72,15 @@ const Team = () => {
       title: "Head of Account",
       image: Acc,
       description:
-        "Expert in cardiovascular health and women’s health initiatives.",
+        "His role includes budgeting and budgetary control, financial reporting, cash flow management, grant financial management, compliance with donor and regulatory requirements, and strengthening internal control systems to ensure accountability and transparency in the use of resources. ",
       details:
-        "Prof. Hadiza Saidu drives key programs on cardiac research and advocacy for women’s health improvement across northern Nigeria.",
+        `Mr. Denis currently serves as the Head of Account at Kano Independent Research Centre Trust (KIRCT), where he is responsible for overseeing the organization's financial management and reporting functions. His role includes budgeting and budgetary control, financial reporting, cash flow management, grant financial management, compliance with donor and regulatory requirements, and strengthening internal control systems to ensure accountability and transparency in the use of resources. 
+
+He also provides strategic financial advice to management to support informed decision-making and organizational sustainability.
+
+His area of specialization is Financial Management, with extensive experience in accounting, auditing, donor-funded project finance, and forensic accounting.
+
+He has a strong background in developing and implementing financial systems, ensuring compliance with international standards, and enhancing financial governance within both private and non-profit organizations.`,
     },
     {
       id: 4,

@@ -23,12 +23,7 @@ const About = () => {
           {/* Left Column */}
           <div>
             <p className="mb-6">
-              Kano Independent Research Centre Trust is a non-profit
-              multi-million dollar Biomedical Research institute established by
-              Pfizer Inc. for the Kano State Government to conduct Biomedical
-              (and Healthcare) Research with focus on communicable and
-              non-communicable diseases of public health importance in Nigeria
-              and the African continent.
+              Kano Independent Research Centre Trust is a non-profit multi-million dollar biomedical research institute established by Pfizer Inc. for the people of Kano state and Nigeria to conduct Biomedical (and Healthcare) Research with a focus on communicable and non-communicable diseases of public health importance in Nigeria and the African continent.
             </p>
             <button
               onClick={() => navigate("/research-lab")}
