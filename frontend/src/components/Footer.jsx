@@ -25,10 +25,7 @@ const Footer = () => {
               </div>
             </div>
             <p className='text-blue-100 leading-relaxed text-lg'>
-              Kano Independent Research Centre Trust is a non-profit multi-million dollar 
-              Biomedical Research institute established by Pfizer Inc. for the Kano State Government to conduct 
-              Bio-medical and Healthcare Research with focus on communicable and non-communicable diseases of 
-              public Health importance in Nigeria and the African continent.
+             Kano Independent Research Centre Trust is a non-profit multi-million dollar biomedical research institute established by Pfizer Inc. for the people of Kano state and Nigeria to conduct Biomedical (and Healthcare) Research with a focus on communicable and non-communicable diseases of public health importance in Nigeria and the African continent.
             </p>
             
             {/* Social Media Links */}
@@ -120,7 +117,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className='text-blue-200 text-sm'>Email Address</p>
-                  <p className='text-white font-semibold group-hover:text-blue-300 transition-colors'>info@kirct.org</p>
+                  <p className='text-white font-semibold group-hover:text-blue-300 transition-colors'>info@kirct.com</p>
                 </div>
               </div>
               
