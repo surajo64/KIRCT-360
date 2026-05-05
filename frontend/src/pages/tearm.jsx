@@ -52,10 +52,12 @@ const Team = () => {
       title: "Head Of Administration",
       image: Admin,
       description:
-        "Oversees hematology and clinical research focusing on sickle cell disease.",
+        "An administrative manager at Kano Independent Research Centre Trust (KIRCT), where he provides strategic and operational oversight of the Centre’s administrative functions.",
       details:
-        "Dr. Idris specializes in hematology and clinical trials, leading a team focused on improving diagnostic and treatment outcomes in blood disorders.",
-    },
+        `An administrative manager at Kano Independent Research Centre Trust (KIRCT), where he provides strategic and operational oversight of the Centre’s administrative functions.
+His core responsibilities include coordinating general administration, managing procurement and supply chain processes, overseeing facility and infrastructure maintenance, and supervising support services such as logistics and driver operations. He also ensures effective financial coordination in line with approved procedures, with a focus on accountability and efficient utilization of resources to support the Centre’s research mandate.
+His area of specialization includes administrative management, procurement and supply chain coordination, financial administration, and institutional operations within a research environment.
+` },
      {
       id: 5,
       name: "Mrs. Hassana Kassim ",
@@ -92,16 +94,19 @@ He has a strong background in developing and implementing financial systems, ens
       details:
         "Prof. Nasiru Abdullahi is a Professor of Biochemistry and Head of the Genomics and Molecular Biology Unit at the Kano Independent Research Centre Trust (KIRCT). He provides scientific and strategic leadership in the establishment and operationalization of genomics infrastructure, with a strong focus on building sustainable research capacity and training the next generation of scientists. He specializes in genomics and molecular biology, with expertise in next-generation sequencing and laboratory systems development. His work focuses on advancing genomics research, with current interests spanning cancer genomics and maternal health–related genetic studies in Nigerian populations.",
     },
-     {
+   {
       id: 8,
       name: "Eng. Muhammad Sabo",
       title: "Head of Maintenace",
       image: ibrahimImage,
       description:
-        "Expert in cardiovascular health and women’s health initiatives.",
+        "He serves as Facility Maintenance Manager, responsible for planning, operation, maintenance, and compliance of all physical infrastructure and building systems essential for uninterrupted research activities, patient care, and diagnostic activities in the Centre.",
       details:
-        "Prof. Hadiza Saidu drives key programs on cardiac research and advocacy for women’s health improvement across northern Nigeria.",
-    },
+      `He serves as Facility Maintenance Manager, responsible for planning, operation, maintenance, and compliance of all physical infrastructure and building systems essential for uninterrupted research activities, patient care, and diagnostic activities in the Centre.
+
+He plans and executes scheduled maintenance of mechanical, electrical, plumbing (MEP), medical gas systems, fire safety systems, building fabric, and utility equipment to prevent unexpected failures and ensure uninterrupted clinical and research uptime.
+He also responds to and resolves breakdowns, malfunctions, and damage across civil, electrical, mechanical, and plumbing systems with minimal disruption to patient care and research activities.
+Engr Sabo also conducts time-based inspections, servicing, testing, and certification of all facility assets, including incinerators, generators, pumps, water treatment plants, building finishes, and structural elements as per healthcare and research compliance schedules.`},
     {
       id: 9,
       name: "Surajo Umar Danja",
