@@ -158,7 +158,7 @@ const facility = () => {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">Quick Facts</h3>
                 <div className="grid md:grid-cols-3 gap-6 text-center">
                     <div>
-                        <div className="text-2xl font-bold text-blue-600">45+</div>
+                        <div className="text-2xl font-bold text-blue-600">80+</div>
                         <div className="text-gray-600">Staff Members</div>
                     </div>
                     <div>

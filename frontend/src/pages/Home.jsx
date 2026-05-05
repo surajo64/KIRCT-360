@@ -380,7 +380,7 @@ const Home = () => {
                 <div className="text-blue-200">Collaborations</div>
               </div>
               <div>
-                <div className="text-4xl font-bold mb-2">15+</div>
+                <div className="text-4xl font-bold mb-2">5+</div>
                 <div className="text-blue-200">Years Experience</div>
               </div>
             </div>
