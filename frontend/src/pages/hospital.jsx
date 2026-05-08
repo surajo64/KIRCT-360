@@ -57,10 +57,18 @@ const Hospital = () => {
 
       {/* Footer Message */}
       <div className="text-center mt-16">
-        <p className="text-gray-600 max-w-3xl mx-auto">
+        <p className="text-gray-600 max-w-3xl mx-auto mb-6">
           🏥 <strong>KIRCT Kilimanjaro Hospital</strong> — Combining compassion, innovation,
           and technology to redefine healthcare delivery in Northern Nigeria.
         </p>
+        <a
+          href="https://hospital.kirctrust.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg transition duration-300 ease-in-out"
+        >
+          Visit Hospital Website
+        </a>
       </div>
     </section>
   );
