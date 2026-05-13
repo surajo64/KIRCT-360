@@ -149,7 +149,7 @@ const AllCourses = () => {
                     </td>
 
                     <td className="px-4 py-3 font-medium text-gray-700">
-                      {currencySymbol} {Math.floor((course.enrolledStudents?.length || 0) * (course.coursePrice * (1 - course.discount / 100)))}
+                      {currencySymbol} {((course.enrolledStudents?.length || 0) * (course.purchasePrice || 0)).toLocaleString()}
                     </td>
 
                     <td className="px-4 py-3">

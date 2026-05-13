@@ -50,6 +50,7 @@ const AppContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + '/api/course/all', { headers: { token } })
 
       if (data.success) {
+        console.log('Frontend fetched courses:', data.courses);
         setAllCourses(data.courses)
       } else {
         toast.error(data.message)

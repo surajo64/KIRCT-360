@@ -13,20 +13,22 @@ const AllCourse = () => {
   const [searchPerformed, setSearchPerformed] = useState(!!incomingQuery);
 
   useEffect(() => {
+    const publishedCourses = allCourses.filter(course => course.isPublished !== false);
     if (incomingQuery) {
       const query = incomingQuery.toLowerCase();
-      const filtered = allCourses.filter(course =>
+      const filtered = publishedCourses.filter(course =>
         (course.courseTitle || '').toLowerCase().includes(query)
       );
       setFilteredCourses(filtered);
     } else {
-      setFilteredCourses(allCourses);
+      setFilteredCourses(publishedCourses);
     }
   }, [allCourses, incomingQuery]);
 
   const handleSearch = () => {
     const query = searchTerm.toLowerCase();
-    const filtered = allCourses.filter(course =>
+    const publishedCourses = allCourses.filter(course => course.isPublished !== false);
+    const filtered = publishedCourses.filter(course =>
       (course.courseTitle || '').toLowerCase().includes(query)
     );
     setFilteredCourses(filtered);
@@ -35,7 +37,8 @@ const AllCourse = () => {
 
   const handleClearSearch = () => {
     setSearchTerm('');
-    setFilteredCourses(allCourses);
+    const publishedCourses = allCourses.filter(course => course.isPublished !== false);
+    setFilteredCourses(publishedCourses);
     setSearchPerformed(false);
   };
 
