@@ -1,35 +1,37 @@
-import sgMail from '@sendgrid/mail';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
+const BREVO_API_KEY = process.env.BREVO_PASS;
 const senderEmail = process.env.SENDER_EMAIL;
 
-export const sendEmail = async (to, subject, html) => {
-    const msg = {
-        to,
-        from: senderEmail,
-        subject,
-        html,
-    };
 
+export const sendEmail = async (to, subject, html) => {
+    console.log(`Attempting to send email to ${to}...`);
     try {
-        await sgMail.send(msg);
-        console.log(`Email sent to ${to}`);
-    } catch (error) {
-        console.error('Error sending email:', error);
-        if (error.response) {
-            console.error(error.response.body);
-        }
-    }
+    const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+      sender: { name: 'KIRCT', email: senderEmail },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html
+    }, {
+      headers: {
+        'api-key': BREVO_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log(`Email sent to ${to}:`, response.data.messageId);
+  } catch (error) {
+    console.error('Error sending email:', error.response ? error.response.data : error.message);
+  }
 };
 
 export const sendSubmissionEmail = async (name, email, targetArea, type) => {
-    const isInternship = type.toLowerCase().includes("internship");
-    const subject = `Application Received: ${targetArea} ${type}`;
-    const html = `
+  const isInternship = type.toLowerCase().includes("internship");
+  const subject = `Application Received: ${targetArea} ${type}`;
+  const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #004d99;">Application Submitted Successfully</h2>
             <p>Dear ${name},</p>
@@ -40,13 +42,13 @@ export const sendSubmissionEmail = async (name, email, targetArea, type) => {
             <p style="font-size: 0.8em; color: #777;">This is an automated notification. Please do not reply to this email.</p>
         </div>
     `;
-    await sendEmail(email, subject, html);
+  await sendEmail(email, subject, html);
 };
 
 export const sendInterviewEmail = async (name, email, type, interviewDate, interviewTime, interviewVenue) => {
-    console.log("INTERNAL: sendInterviewEmail", { name, email, type, interviewDate, interviewTime, interviewVenue });
-    const subject = `Interview Invitation: ${type} Application`;
-    const html = `
+  console.log("INTERNAL: sendInterviewEmail", { name, email, type, interviewDate, interviewTime, interviewVenue });
+  const subject = `Interview Invitation: ${type} Application`;
+  const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #004d99;">Interview Invitation</h2>
             <p>Dear ${name},</p>
@@ -62,12 +64,12 @@ export const sendInterviewEmail = async (name, email, type, interviewDate, inter
             <p style="font-size: 0.8em; color: #777;">This is an automated notification. Please do not reply to this email.</p>
         </div>
     `;
-    await sendEmail(email, subject, html);
+  await sendEmail(email, subject, html);
 };
 
 export const sendRejectionEmail = async (name, email, type) => {
-    const subject = `Application Status: ${type} Application`;
-    const html = `
+  const subject = `Application Status: ${type} Application`;
+  const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #004d99;">Application Update</h2>
             <p>Dear ${name},</p>
@@ -78,12 +80,12 @@ export const sendRejectionEmail = async (name, email, type) => {
             <p style="font-size: 0.8em; color: #777;">This is an automated notification. Please do not reply to this email.</p>
         </div>
     `;
-    await sendEmail(email, subject, html);
+  await sendEmail(email, subject, html);
 };
 
 export const sendApprovalEmail = async (name, email, type, startDate) => {
-    const subject = `Congratulations! Application Approved: ${type}`;
-    const html = `
+  const subject = `Congratulations! Application Approved: ${type}`;
+  const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #00802b;">Congratulations!</h2>
             <p>Dear ${name},</p>
@@ -104,7 +106,7 @@ export const sendApprovalEmail = async (name, email, type, startDate) => {
             <p style="font-size: 0.8em; color: #777;">This is an automated notification. Please do not reply to this email.</p>
         </div>
     `;
-    await sendEmail(email, subject, html);
+  await sendEmail(email, subject, html);
 };
 
 // ─── Course Enrollment Emails ────────────────────────────────────────────────
@@ -129,8 +131,8 @@ export const sendEnrollmentConfirmationEmail = async ({
   const venueBlock = isPhysical
     ? `<p style="margin:0"><strong>📍 Venue:</strong> ${courseAddress || 'To be communicated'}</p>`
     : isVirtual
-    ? `<p style="margin:0"><strong>🔗 Meeting Link:</strong> <a href="${meetingUrl}" target="_blank">${meetingUrl || 'To be communicated'}</a></p>`
-    : '';
+      ? `<p style="margin:0"><strong>🔗 Meeting Link:</strong> <a href="${meetingUrl}" target="_blank">${meetingUrl || 'To be communicated'}</a></p>`
+      : '';
 
   const subject = `✅ Enrollment Confirmed – ${courseTitle}`;
   const html = `

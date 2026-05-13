@@ -35,7 +35,7 @@ const AppContextProvider = (props) => {
     setToken('');
     setAtoken('');
     setAdminData(null);
-    navigate("/login");
+    navigate("/");
   }, [navigate]);
 
   // Fetch all Students

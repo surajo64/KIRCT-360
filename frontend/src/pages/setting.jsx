@@ -55,7 +55,7 @@ const Setting = () => {
     if (token) {
       setToken("");
       localStorage.removeItem("token");
-      navigate("/login");
+      navigate("/");
     }
   };
 
