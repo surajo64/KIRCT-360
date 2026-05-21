@@ -22,16 +22,16 @@ const educatorMenuItems = [
 // Admin Menu
 const adminMenuItems = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, to: '/admin-dashboard' },
+  { label: 'Internships', icon: <BookOpen size={20} />, to: '/educator/internship-applications' },
+  { label: 'Job Applications', icon: <Users size={20} />, to: '/educator/job-applications' },
+  { label: 'Manage News', icon: <Newspaper size={20} />, to: '/educator/manage-news' },
+  { label: 'Manage Job Vacancies', icon: <Users size={20} />, to: '/educator/manage-job-vacancies' },
   { label: 'Add Course', icon: <PlusCircle size={20} />, to: '/educator/add-course' },
   { label: 'All Courses', icon: <BookOpen size={20} />, to: '/educator/all-courses' },
   { label: 'Questions', icon: <PlusCircle size={20} />, to: '/educator/add-quize' },
   { label: 'Student Enrolled', icon: <Users size={20} />, to: '/educator/all-student-enrolled' },
   { label: 'Add User', icon: <PlusCircle size={20} />, to: '/educator/register' },
   { label: 'Users', icon: <Users size={20} />, to: '/educator/educators' },
-  { label: 'Internships', icon: <BookOpen size={20} />, to: '/educator/internship-applications' },
-  { label: 'Job Applications', icon: <Users size={20} />, to: '/educator/job-applications' },
-  { label: 'Manage News', icon: <Newspaper size={20} />, to: '/educator/manage-news' },
-  { label: 'Manage Job Vacancies', icon: <Users size={20} />, to: '/educator/manage-job-vacancies' },
 
 ];
 
