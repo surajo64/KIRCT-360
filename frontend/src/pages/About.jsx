@@ -36,13 +36,7 @@ const About = () => {
           {/* Right Column */}
           <div>
             <p className="mb-6">
-              Donors of the project and pharmaceutical giant, Pfizer, built the
-              facility to function as both a primary health facility as well as
-              a complementary tertiary health facility to the already existing
-              health institutions in Kano State. The Centre is administered by a
-              board of seven members appointed by Pfizer Inc. and the Kano State
-              Government. The board is led by a distinguished Professor of
-              Medicine, a Nephrologist, and an Administrator, Prof Aliyu Abdu.
+              Donors of the project and pharmaceutical giant, Pfizer, built the facility to serve as a tertiary laboratory facility to the already existing health institutions in Kano State. The Centre is administered by a board of seven members appointed by Pfizer Inc. and the Kano State Government. The board is led by a distinguished Professor of Medicine, a Nephrologist, and an Administrator, Prof Aliyu Abdu.
             </p>
             <button
               onClick={() => navigate("/board")}

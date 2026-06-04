@@ -119,14 +119,16 @@ Engr Sabo also conducts time-based inspections, servicing, testing, and certific
     },
     {
       id: 10,
-      name: "Barr. Nazir Ibrahim",
+      name: "Naziru Bashir Ibrahim, Esq. LL.M, B.L, LL.B, PGDE",
       title: "Head of Legal Department",
       image: Legal,
       description:
-        "Oversees hematology and clinical research focusing on sickle cell disease.",
+        "He serves as the Grant Specialist and Legal Adviser of the Centre,  providing strategic legal and grants management support to advance the Centre’s research objectives.",
       details:
-        "Dr. Idris specializes in hematology and clinical trials, leading a team focused on improving diagnostic and treatment outcomes in blood disorders.",
-    },
+       `He serves as the Grant Specialist and Legal Adviser of the Centre,  providing strategic legal and grants management support to advance the Centre’s research objectives. In his dual role, he is responsible for drafting, reviewing, and negotiating contracts, Memoranda of Understanding (MoUs), and other collaboration agreements, and for rendering legal opinions and advisory services to Management and research teams.
+Barr Nazir contributes to the development and review of institutional policies and governance documents, as required, while providing guidance on legal and regulatory matters to support compliance and risk mitigation. He also ensures the Centre’s compliance with statutory obligations, including reporting requirements with the Corporate Affairs Commission (CAC).
+In his grants management role, he supports grant administration processes across multiple projects and provides guidance on ethical considerations in research. He also oversees the Centre’s registration and compliance with major international funding platforms, including SAM.gov, eRA Commons, Grants.gov, and ProposalCentral. In addition, he regularly prepares letters of support and institutional endorsements for researchers and liaises with funding agencies and partners on compliance and contractual matters.
+His areas of specialization include corporate law, medical law, intellectual property law, bioethics, research administration and public procurement.` },
      {
       id: 11,
       name: "Dr. Hassan Adam",
