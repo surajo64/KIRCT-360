@@ -641,7 +641,7 @@ export const addUserRating = async (req, res) => {
 export const fetchQuiz = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const quiz = await Quiz.findOne({ courseId });
+    const quiz = await Quiz.findOne({ courseId }).populate("courseId", "courseTitle");
 
     if (!quiz) {
       return res.status(404).json({ message: "No quiz found for this course" });
@@ -757,6 +757,21 @@ export const getCertificate = async (req, res) => {
       return res.status(404).json({ success: false, message: "Course progress not found" });
     }
 
+    // ✅ Check if course has a quiz
+    const quiz = await Quiz.findOne({ courseId });
+    const hasQuiz = !!quiz;
+
+    // ✅ Requirement Check
+    if (hasQuiz) {
+      if (!progress.quizPassed) {
+        return res.status(403).json({ success: false, message: "You must pass the quiz to generate a certificate" });
+      }
+    } else {
+      if (!progress.completed) {
+        return res.status(403).json({ success: false, message: "You must complete the course to generate a certificate" });
+      }
+    }
+
     // ✅ If already generated
     if (progress.certificateUrl) {
       return res.json({ success: true, certificateUrl: progress.certificateUrl });
@@ -764,19 +779,20 @@ export const getCertificate = async (req, res) => {
 
     const course = progress.courseId;
     const certificateId = uuidv4().slice(0, 8).toUpperCase();
-    const today = new Date().toLocaleDateString();
-
-    // ✅ Fetch template & seal
-    const [templateResponse, sealResponse] = await Promise.all([
-      axios.get(TEMPLATE_URL, { responseType: "arraybuffer" }),
-      axios.get(SEAL_IMAGE_URL, { responseType: "arraybuffer" }),
-    ]);
-
-    const templateBuffer = Buffer.from(templateResponse.data, "binary");
-    const sealBuffer = Buffer.from(sealResponse.data, "binary");
+    const today = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
 
     // ✅ Create PDF
-    const doc = new PDFDocument({ size: "A4", layout: "landscape" });
+    let isResSent = false;
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margins: { top: 0, left: 0, right: 0, bottom: 0 }, // No margins for full design control
+    });
+
     let buffers = [];
     doc.on("data", buffers.push.bind(buffers));
     doc.on("end", async () => {
@@ -790,6 +806,8 @@ export const getCertificate = async (req, res) => {
         },
         async (err, result) => {
           if (err) {
+            if (isResSent) return;
+            isResSent = true;
             return res.status(500).json({
               success: false,
               message: "Cloudinary upload failed",
@@ -800,6 +818,8 @@ export const getCertificate = async (req, res) => {
           progress.certificateUrl = result.secure_url;
           await progress.save();
 
+          if (isResSent) return;
+          isResSent = true;
           return res.json({ success: true, certificateUrl: result.secure_url });
         }
       );
@@ -807,72 +827,115 @@ export const getCertificate = async (req, res) => {
       streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
     });
 
-    // 🎨 Background
-    doc.image(templateBuffer, 0, 0, {
-      width: doc.page.width,
-      height: doc.page.height,
-    });
+    // --- Background Design (Precision Geometric Shapes) ---
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
 
-    // 🏛️ Logo
-    doc.image(sealBuffer, doc.page.width / 2 - 35, 40, { width: 70 });
+    // Top-Left Corner (Overlapping Accents)
+    doc.save()
+      .moveTo(0, 0).lineTo(200, 0).lineTo(0, 200).fill("#001F3F") // Dark Navy
+      .moveTo(0, 0).lineTo(150, 0).lineTo(0, 150).fill("#003366") // Slightly lighter navy
+      .moveTo(0, 0).lineTo(80, 0).lineTo(0, 80).fill("#0074D9");   // Light blue tip
+    doc.restore();
 
-    // 📌 Date & Certificate ID (top-right, inside page)
-    doc.fontSize(12).fillColor("#000").font("Helvetica");
+    // Bottom-Right Corner (Overlapping Accents)
+    doc.save()
+      .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 200, pageHeight).lineTo(pageWidth, pageHeight - 200).fill("#001F3F")
+      .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 150, pageHeight).lineTo(pageWidth, pageHeight - 150).fill("#003366")
+      .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 80, pageHeight).lineTo(pageWidth, pageHeight - 80).fill("#0074D9");
+    doc.restore();
 
+    // --- Content Layer ---
 
-    // Certificate ID ~ slightly below Date
-    doc.text(`Certificate ID ${certificateId}`, doc.page.width - 200, 80, {
-      align: "left",
-    });
+    // 🏛️ Logo & Institution Name
+    try {
+      console.log(`Starting logo fetch for certificate: ${certificateId}`);
+      const logoResponse = await axios.get(SEAL_IMAGE_URL, {
+        responseType: "arraybuffer",
+        timeout: 5000 // 5 second timeout to prevent hangs
+      });
+      const logoBuffer = Buffer.from(logoResponse.data, "binary");
+      doc.image(logoBuffer, (pageWidth / 2) - 40, 40, { width: 80 });
+      console.log("Logo fetched and drawn successfully");
+    } catch (e) {
+      console.error("Logo failed to load or timed out:", e.message);
+    }
 
+    doc.moveDown(5.5);
+    doc.fontSize(22).fillColor("#001F3F").font("Helvetica-Bold");
+    doc.text("KANO INDEPENDENT RESEARCH CENTRE TRUST", 0, 135, { align: "center", characterSpacing: 1 });
 
-    // 🏫 Institution Name
-    doc.fontSize(24).fillColor("#0b0b0c").font("Helvetica-Bold");
-    doc.text("KANO INDEPENDENT RESEARCH CENTRE TRUST", 0, 140, { align: "center" });
+    doc.moveDown(1.5);
+    doc.fontSize(28).fillColor("#0074D9").font("Helvetica-Bold"); // Vibrant Blue title
+    doc.text("CERTIFICATE OF ATTENDANCE", { align: "center", characterSpacing: 2 });
 
-    // 📝 Title
-    doc.fontSize(20).fillColor("#e69900").font("Helvetica-Bold");
-    doc.text("Certificate of Completion", 0, 170, { align: "center" });
+    doc.moveDown(1.2);
+    doc.fontSize(14).fillColor("#555").font("Helvetica");
+    doc.text("Presented to :", { align: "center" });
 
-    // 📝 Student
-    doc.fontSize(34).fillColor("#0c12be").font("Helvetica-Bold");
-    doc.text(user.name, 0, 250, { align: "center" });
+    doc.moveDown(0.8);
+    doc.fontSize(42).fillColor("#000000").font("Times-BoldItalic");
+    doc.text(user.name, { align: "center" });
 
-    // 📚 Course info
-    doc.fontSize(18).fillColor("#000").font("Helvetica");
-    doc.text(`has successfully completed the course "${course.courseTitle}"`, 60, 310, {
-      align: "center",
-      width: doc.page.width - 120,
-    });
-    doc.text(`with a score of ${progress.quizScore}% on ${today}`, 60, 345, {
-      align: "center",
-      width: doc.page.width - 120,
-    });
+    // ✍️ Blue underline for Name
+    const nameWidth = doc.widthOfString(user.name);
+    const underlineY = doc.y - 2;
+    doc.moveTo((pageWidth / 2) - (nameWidth / 2) - 30, underlineY)
+      .lineTo((pageWidth / 2) + (nameWidth / 2) + 30, underlineY)
+      .lineWidth(2)
+      .stroke("#0074D9");
 
-    // ✍️ Signature (bottom-left, inside page)
-    const signatory = "___________________";
-    doc.fontSize(14).fillColor("#0A1D66").font("Helvetica-Bold");
-    doc.text(signatory, 100, 470, { align: "left" });
-    doc.fontSize(12).fillColor("#555").font("Helvetica");
-    doc.text("KIRCT-DG/CEO", 100, 490, { align: "left" });
+    doc.moveDown(0.8);
+    doc.fontSize(16).fillColor("#333").font("Helvetica");
 
+    let dateRangeText = `held on ${today}`;
+    if (course.courseStartDate && course.courseEndDate) {
+      const start = new Date(course.courseStartDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' });
+      const end = new Date(course.courseEndDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' });
+      dateRangeText = `from ${start} to ${end}`;
+    }
 
-    // ✍️ Signatory (bottom-right, inside page)
-    const signatory1 = "___________________";
+    // 🎓 Course Title Styling (Bold, No Italics, Quotes for differentiation)
+    const courseInfoText = `For completing a training on "${course.courseTitle.toUpperCase()}", ${dateRangeText}.`;
+    doc.font("Helvetica-Bold").fontSize(16).fillColor("#333")
+      .text(courseInfoText, 80, doc.y, {
+        align: "center",
+        width: pageWidth - 160,
+        lineGap: 4
+      });
 
-    doc.fontSize(14).fillColor("#0A1D66").font("Helvetica-Bold");
-    doc.text(signatory1, 0, 470, {
-      align: "right",
-      width: doc.page.width - 100, // keep margin from edge
-    });
+    // 🛡️ Pro Red Seal Graphic (Moved DOWN)
+    const sealX = (pageWidth / 2);
+    const sealY = pageHeight - 85;
+    doc.save();
+    const innerRadius = 45;
+    const outerRadius = 55;
+    const points = 50;
+    doc.moveTo(sealX + outerRadius, sealY);
+    for (let i = 0; i < points * 2; i++) {
+      const angle = (i * Math.PI) / points;
+      const radius = i % 2 === 0 ? outerRadius : innerRadius;
+      doc.lineTo(sealX + radius * Math.cos(angle), sealY + radius * Math.sin(angle));
+    }
+    doc.fill("#C00000");
+    doc.restore();
 
-    doc.fontSize(12).fillColor("#555").font("Helvetica");
-    doc.text("KIRCT-Admin", 0, 490, {
-      align: "right",
-      width: doc.page.width - 100,
-    });
+    // ✍️ Signatories (Symmetric Layout and Lowered)
+    const sigY = pageHeight - 85;
+    const sigWidth = 240;
 
+    // Left Signature
+    doc.fontSize(12).fillColor("#000").font("Helvetica-Bold");
+    doc.moveTo(100, sigY).lineTo(100 + sigWidth, sigY).lineWidth(1).stroke("#000");
+    doc.text("Basheer Isah Waziri (MBBS, PhD)", 100, sigY + 10, { width: sigWidth, align: "center" });
+    doc.fontSize(11).font("Helvetica").text("Program Coordinator", 100, sigY + 25, { width: sigWidth, align: "center" });
 
+    // Right Signature
+    doc.moveTo(pageWidth - 340, sigY).lineTo(pageWidth - 340 + sigWidth, sigY).stroke("#000");
+    doc.fontSize(12).font("Helvetica-Bold").text("Prof. Hamisu Salihu (M.D, PhD)", pageWidth - 340, sigY + 10, { width: sigWidth, align: "center" });
+    doc.fontSize(11).font("Helvetica").text("CEO/Director General", pageWidth - 340, sigY + 25, { width: sigWidth, align: "center" });
+
+    doc.fontSize(8).fillColor("#999").text(`Certificate ID: ${certificateId}`, 40, pageHeight - 30);
     doc.end();
 
   } catch (err) {

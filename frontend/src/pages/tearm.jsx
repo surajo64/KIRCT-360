@@ -10,6 +10,7 @@ import CMD from "../assets/cmd.png";
 import Acc from "../assets/denis.png";
 import ibrahimImage from "../assets/upload_area.png";
 import nasirimImage from "../assets/nasir.png";
+import jobe from "../assets/jobe.png";
 
 const Team = () => {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -58,7 +59,7 @@ const Team = () => {
 His core responsibilities include coordinating general administration, managing procurement and supply chain processes, overseeing facility and infrastructure maintenance, and supervising support services such as logistics and driver operations. He also ensures effective financial coordination in line with approved procedures, with a focus on accountability and efficient utilization of resources to support the Centre’s research mandate.
 His area of specialization includes administrative management, procurement and supply chain coordination, financial administration, and institutional operations within a research environment.
 ` },
-     {
+    {
       id: 5,
       name: "Mrs. Hassana Kassim ",
       title: "Head of Human Resource",
@@ -94,7 +95,7 @@ He has a strong background in developing and implementing financial systems, ens
       details:
         "Prof. Nasiru Abdullahi is a Professor of Biochemistry and Head of the Genomics and Molecular Biology Unit at the Kano Independent Research Centre Trust (KIRCT). He provides scientific and strategic leadership in the establishment and operationalization of genomics infrastructure, with a strong focus on building sustainable research capacity and training the next generation of scientists. He specializes in genomics and molecular biology, with expertise in next-generation sequencing and laboratory systems development. His work focuses on advancing genomics research, with current interests spanning cancer genomics and maternal health–related genetic studies in Nigerian populations.",
     },
-   {
+    {
       id: 8,
       name: "Eng. Muhammad Sabo",
       title: "Head of Maintenace",
@@ -102,7 +103,7 @@ He has a strong background in developing and implementing financial systems, ens
       description:
         "He serves as Facility Maintenance Manager, responsible for planning, operation, maintenance, and compliance of all physical infrastructure and building systems essential for uninterrupted research activities, patient care, and diagnostic activities in the Centre.",
       details:
-      `He serves as Facility Maintenance Manager, responsible for planning, operation, maintenance, and compliance of all physical infrastructure and building systems essential for uninterrupted research activities, patient care, and diagnostic activities in the Centre.
+        `He serves as Facility Maintenance Manager, responsible for planning, operation, maintenance, and compliance of all physical infrastructure and building systems essential for uninterrupted research activities, patient care, and diagnostic activities in the Centre.
 
 He plans and executes scheduled maintenance of mechanical, electrical, plumbing (MEP), medical gas systems, fire safety systems, building fabric, and utility equipment to prevent unexpected failures and ensure uninterrupted clinical and research uptime.
 He also responds to and resolves breakdowns, malfunctions, and damage across civil, electrical, mechanical, and plumbing systems with minimal disruption to patient care and research activities.
@@ -125,12 +126,22 @@ Engr Sabo also conducts time-based inspections, servicing, testing, and certific
       description:
         "He serves as the Grant Specialist and Legal Adviser of the Centre,  providing strategic legal and grants management support to advance the Centre’s research objectives.",
       details:
-       `He serves as the Grant Specialist and Legal Adviser of the Centre,  providing strategic legal and grants management support to advance the Centre’s research objectives. In his dual role, he is responsible for drafting, reviewing, and negotiating contracts, Memoranda of Understanding (MoUs), and other collaboration agreements, and for rendering legal opinions and advisory services to Management and research teams.
+        `He serves as the Grant Specialist and Legal Adviser of the Centre,  providing strategic legal and grants management support to advance the Centre’s research objectives. In his dual role, he is responsible for drafting, reviewing, and negotiating contracts, Memoranda of Understanding (MoUs), and other collaboration agreements, and for rendering legal opinions and advisory services to Management and research teams.
 Barr Nazir contributes to the development and review of institutional policies and governance documents, as required, while providing guidance on legal and regulatory matters to support compliance and risk mitigation. He also ensures the Centre’s compliance with statutory obligations, including reporting requirements with the Corporate Affairs Commission (CAC).
 In his grants management role, he supports grant administration processes across multiple projects and provides guidance on ethical considerations in research. He also oversees the Centre’s registration and compliance with major international funding platforms, including SAM.gov, eRA Commons, Grants.gov, and ProposalCentral. In addition, he regularly prepares letters of support and institutional endorsements for researchers and liaises with funding agencies and partners on compliance and contractual matters.
 His areas of specialization include corporate law, medical law, intellectual property law, bioethics, research administration and public procurement.` },
-     {
+    {
       id: 11,
+      name: "YUSUF DANASABE JOBBI (BMLS, MSc, MSc. GCH, FMLSCN)",
+      title: "Head of Clinical Diagnostic Laboratory at KIRCT",
+      image: jobe,
+      description:
+        "Yusuf Danasabe Jobbi is the Head of Clinical Diagnostic Laboratory at KIRCT.",
+      details:
+        `Yusuf Danasabe Jobbi is the Head of Clinical Diagnostic Laboratory at KIRCT. He holds an MSc in Global Child Health (St. Jude Graduate School, USA), an MSc in Biotechnology (BUK), and a BMLS (UDUS). With over a decade of clinical experience at Aminu Kano Teaching Hospital and KIRCT, Yusuf advances laboratory medicine and SCD genomics in Nigeria. His prolific research focuses on pediatric haematology, rare hemoglobin variants genes, and infectious diseases, driving global collaborations with St. Jude Children’s Research Hospital and the NIH-funded SickleGenAfrica network.`
+    },
+    {
+      id: 12,
       name: "Dr. Hassan Adam",
       title: "Head of Epidemiology Research",
       image: ibrahimImage,
@@ -140,14 +151,15 @@ His areas of specialization include corporate law, medical law, intellectual pro
         "Dr. Idris specializes in hematology and clinical trials, leading a team focused on improving diagnostic and treatment outcomes in blood disorders.",
     },
     {
-      id: 12,
-      name: "Imran Nasir Tahir",
+      id: 13,
+      name: "Umar Garba ",
       title: "Head of Business Development",
       image: Bus,
       description:
-        "He delivers impactful solutions to KIRCT’s growth and partnership strategies across public and private sectors.",
+        "He leads commercialization initiatives, strategic partnerships, market development, and revenue-generation activities.",
       details:
-        "A results-driven professional with a background in International Relations and experience in Business Development. He combines strategic thinking, cross-cultural communication, and market insight to build partnerships, identify growth opportunities, and drive success. Skilled in stakeholder engagement and navigating diverse environments, he delivers impactful solutions across both public and private sectors",
+        `Umar Garba is the Head of Business Development at the Kano Independent Research Centre Trust (KIRCT), where he leads commercialization initiatives, strategic partnerships, market development, and revenue-generation activities. He holds a First-Class B.Sc. in Economics from Bayero University Kano and a First-Class M.A. in Economics from Sharda University India.
+With over a decade of experience spanning banking, relationship management, and business development, Umar combines strong analytical expertise with practical market knowledge. His research interests include health economics, development finance, public policy, and financial systems, and he has authored several publications on economic growth, public debt, and financial markets. He is passionate about translating research and innovation into sustainable commercial opportunities that create societal impact`
     },
   ];
 
@@ -173,9 +185,9 @@ His areas of specialization include corporate law, medical law, intellectual pro
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4">
             OUR <span className="text-blue-800">MANAGEMENT</span>
-             <span className="text-red-600">.</span>
+            <span className="text-red-600">.</span>
           </h2>
-           <div className="w-24 h-1 bg-red-600 mx-auto mt-4 mb-6 rounded-full"></div>
+          <div className="w-24 h-1 bg-red-600 mx-auto mt-4 mb-6 rounded-full"></div>
           <p className="text-gray-600 max-w-3xl mx-auto">
             Meet the exceptional professionals driving the Kano Independent
             Research Centre Trust’s mission to advance biomedical and
@@ -245,40 +257,40 @@ His areas of specialization include corporate law, medical law, intellectual pro
         </div>
       </div>
 
-{/* Profile Modal */}
-{isModalOpen && selectedMember && (
-  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-    <div className="bg-white rounded-2xl max-w-lg w-full relative overflow-hidden shadow-2xl my-8">
-      {/* Close Button */}
-      <button
-        onClick={closeModal}
-        className="absolute top-3 right-3 text-gray-700 hover:text-red-600 text-2xl font-bold z-10"
-      >
-        &times;
-      </button>
+      {/* Profile Modal */}
+      {isModalOpen && selectedMember && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full relative overflow-hidden shadow-2xl my-8">
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-700 hover:text-red-600 text-2xl font-bold z-10"
+            >
+              &times;
+            </button>
 
-      {/* Image Section (fit properly without cutting) */}
-      <div className="w-full bg-gray-100 flex items-center justify-center">
-        <img
-          src={selectedMember.image}
-          alt={selectedMember.name}
-          className="object-contain max-h-80 w-auto"
-        />
-      </div>
+            {/* Image Section (fit properly without cutting) */}
+            <div className="w-full bg-gray-100 flex items-center justify-center">
+              <img
+                src={selectedMember.image}
+                alt={selectedMember.name}
+                className="object-contain max-h-80 w-auto"
+              />
+            </div>
 
-      {/* Info Section (scrollable if long) */}
-      <div className="p-6 max-h-[60vh] overflow-y-auto">
-        <h3 className="text-2xl font-bold text-blue-800 mb-2 text-center">
-          {selectedMember.name}
-        </h3>
-        <p className="text-gray-500 mb-4 text-center">{selectedMember.title}</p>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-          {selectedMember.details}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+            {/* Info Section (scrollable if long) */}
+            <div className="p-6 max-h-[60vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-blue-800 mb-2 text-center">
+                {selectedMember.name}
+              </h3>
+              <p className="text-gray-500 mb-4 text-center">{selectedMember.title}</p>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                {selectedMember.details}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -54,6 +54,7 @@ import Player from './pages/player'
 import ForgotPassword from './pages/ForgotPassword '
 import ResetPassword from './pages/resetPassword'
 import VerifyEmail from './pages/VerifyEmail'
+import Quiz from './pages/quize'
 // Admin/Educator Pages Imports
 import EducatorDashboard from './pages/admin/educator-dashboard'
 import AdminDashboard from './pages/admin/admin-dashboard'
@@ -157,6 +158,7 @@ const App = () => {
             <Route path='/forgot-password' element={<ForgotPassword />} />
             <Route path='/reset-password/:token' element={<ResetPassword />} />
             <Route path='/verify-email/:token' element={<VerifyEmail />} />
+            <Route path='/quiz/:id' element={<Quiz />} />
           </Routes>
           <Footer />
         </>

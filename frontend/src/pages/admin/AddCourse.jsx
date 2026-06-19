@@ -28,6 +28,8 @@ const AddCourse = () => {
   const [meetingUrl, setMeetingUrl] = useState('');
   const [classSchedule, setClassSchedule] = useState('');
   const [applicationDeadline, setApplicationDeadline] = useState('');
+  const [courseStartDate, setCourseStartDate] = useState('');
+  const [courseEndDate, setCourseEndDate] = useState('');
   const [showPopup, setShowPopup] = useState(false)
   const [currentChapterId, setCurrentChapterId] = useState(null)
   const [lectureDetails, setLectureDetails] = useState({
@@ -125,7 +127,9 @@ const AddCourse = () => {
         classSchedule,
         discount: Number(discount),
         courseContent: chapters,
-        applicationDeadline: applicationDeadline,
+        applicationDeadline: applicationDeadline || null,
+        courseStartDate: courseStartDate || null,
+        courseEndDate: courseEndDate || null,
       };
 
       const formData = new FormData();
@@ -148,6 +152,8 @@ const AddCourse = () => {
         setMeetingUrl("");
         setClassSchedule("");
         setApplicationDeadline("");
+        setCourseStartDate("");
+        setCourseEndDate("");
         quillReff.current.root.innerHTML = "";
         toast.success("Course added successfully!");
       } else {
@@ -256,6 +262,28 @@ const AddCourse = () => {
               <p className="text-xs text-gray-500 mt-1">
                 Last date for students to register.
               </p>
+            </div>
+
+            {/* Course Training Dates */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-700 mb-1 text-sm font-semibold">Course Start Date</label>
+                <input
+                  type="date"
+                  value={courseStartDate}
+                  onChange={e => setCourseStartDate(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1 text-sm font-semibold">Course End Date</label>
+                <input
+                  type="date"
+                  value={courseEndDate}
+                  onChange={e => setCourseEndDate(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
             </div>
           </div>
 

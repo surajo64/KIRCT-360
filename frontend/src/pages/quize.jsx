@@ -5,12 +5,12 @@ import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
 
- 
+
 
 const Quiz = ({ user }) => {
   const { token, backendUrl, userData, setUserData } = useContext(AppContext);
   const { id: courseId } = useParams();
- const navigate = useNavigate();
+  const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
@@ -120,7 +120,7 @@ const Quiz = ({ user }) => {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
           <h1 className="text-2xl font-bold mb-2">Course Quiz</h1>
-          <p className="opacity-90">Test your knowledge on {quiz.courseId.name}</p>
+          <p className="opacity-90">Test your knowledge on {quiz.courseId?.courseTitle || 'the course'}</p>
         </div>
 
         {/* Progress bar */}
@@ -155,15 +155,15 @@ const Quiz = ({ user }) => {
                     <div
                       key={index}
                       className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 ${answers[currentQ._id] === opt
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
                         }`}
                       onClick={() => handleOptionChange(currentQ._id, opt)}
                     >
                       <div className="flex items-center">
                         <div className={`flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center mr-3 ${answers[currentQ._id] === opt
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-400'
+                          ? 'border-blue-500 bg-blue-500'
+                          : 'border-gray-400'
                           }`}>
                           {answers[currentQ._id] === opt && (
                             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -184,8 +184,8 @@ const Quiz = ({ user }) => {
                   onClick={handlePrev}
                   disabled={currentQuestion === 0}
                   className={`px-5 py-2.5 rounded-lg font-medium ${currentQuestion === 0
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
                   Previous
@@ -196,8 +196,8 @@ const Quiz = ({ user }) => {
                     onClick={handleNext}
                     disabled={!answers[currentQ._id]}
                     className={`px-5 py-2.5 rounded-lg font-medium text-white ${!answers[currentQ._id]
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700'
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
                       }`}
                   >
                     Next
@@ -207,8 +207,8 @@ const Quiz = ({ user }) => {
                     onClick={handleSubmit}
                     disabled={submitting || Object.keys(answers).length !== quiz.questions.length}
                     className={`px-5 py-2.5 rounded-lg font-medium text-white ${submitting || Object.keys(answers).length !== quiz.questions.length
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-green-600 hover:bg-green-700'
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700'
                       }`}
                   >
                     {submitting ? (
@@ -257,8 +257,8 @@ const Quiz = ({ user }) => {
             </div>
 
             <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${result.passed
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'
               }`}>
               {result.passed ? 'Passed 🎉' : 'Failed ❌'}
             </div>

@@ -176,6 +176,7 @@ export const addCourse = async (req, res) => {
     }
 
     const parsedCourseData = JSON.parse(courseData);
+    console.log("Adding Course - Parsed Data:", parsedCourseData);
     parsedCourseData.educator = adminId;
 
     delete parsedCourseData.purchasePrice;
@@ -202,6 +203,7 @@ export const updateCourse = async (req, res) => {
     }
 
     const parsedCourseData = JSON.parse(courseData);
+    console.log("Updating Course - Parsed Data:", parsedCourseData);
 
     if (!parsedCourseData._id) {
       return res.json({ success: false, message: "Course ID is missing" });
@@ -223,7 +225,9 @@ export const updateCourse = async (req, res) => {
     existingCourse.classSchedule = parsedCourseData.classSchedule ?? existingCourse.classSchedule;
     existingCourse.discount = parsedCourseData.discount ?? existingCourse.discount;
     existingCourse.courseContent = parsedCourseData.courseContent || existingCourse.courseContent;
-    existingCourse.applicationDeadline = parsedCourseData.applicationDeadline ?? existingCourse.applicationDeadline;
+    existingCourse.applicationDeadline = parsedCourseData.applicationDeadline || null;
+    existingCourse.courseStartDate = parsedCourseData.courseStartDate || null;
+    existingCourse.courseEndDate = parsedCourseData.courseEndDate || null;
 
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path);
@@ -314,8 +318,8 @@ export const enrolledStudentsData = async (req, res) => {
     const courseIds = courses.map(course => course._id)
 
     const purchases = await Purchase.find({ courseId: { $in: courseIds }, status: 'Completed' })
-                   .populate('userId', 'name image')
-                   .populate('courseId', 'courseTitle courseContent');
+      .populate('userId', 'name image')
+      .populate('courseId', 'courseTitle courseContent');
 
     const enrolledStudents = await Promise.all(
       purchases.map(async (purchase) => {
@@ -560,8 +564,17 @@ export const getFilteredEnrolledStudents = async (req, res) => {
     }
 
     const purchases = await Purchase.find(purchaseQuery)
-                    .populate('userId', 'name image email')
-                    .populate('courseId', 'courseTitle courseContent');
+      .populate('userId', 'name image email')
+      .populate('courseId', 'courseTitle courseContent');
+
+    // Fetch all quizzes for the courses in the purchases
+    const purchaseCourseIds = purchases.map(p => p.courseId?._id?.toString()).filter(id => id);
+    const quizzes = await Quiz.find({ courseId: { $in: purchaseCourseIds } });
+    const quizCourseIds = quizzes.map(q => q.courseId.toString());
+
+    console.log("Purchase Course IDs:", purchaseCourseIds);
+    console.log("Quizzes found:", quizzes.length);
+    console.log("Quiz Course IDs:", quizCourseIds);
 
     let enrolledStudents = await Promise.all(
       purchases.map(async (purchase) => {
@@ -577,6 +590,9 @@ export const getFilteredEnrolledStudents = async (req, res) => {
         const progressPercentage = progressDoc?.completed ? 100 : Math.min(100, Math.round((completedCount / totalCount) * 100));
         const progress = progressDoc?.completed ? "Completed" : "On Going";
 
+        const hasQuiz = purchase.courseId && quizCourseIds.includes(purchase.courseId._id.toString());
+        // console.log(`Course ${purchase.courseId.courseTitle} (${purchase.courseId._id}) has quiz: ${hasQuiz}`);
+
         return {
           student: purchase.userId,
           progress,
@@ -591,7 +607,8 @@ export const getFilteredEnrolledStudents = async (req, res) => {
           quizPassed: progressDoc?.quizPassed || false,
           quizTaken: progressDoc?.quizTaken || false,
           quizScore: progressDoc?.quizScore || 0,
-          certificateUrl: progressDoc?.certificateUrl || null
+          certificateUrl: progressDoc?.certificateUrl || null,
+          hasQuiz
         };
       })
     );
@@ -623,24 +640,29 @@ const createCertificateLogic = async (userId, courseId) => {
   const progress = await CourseProgress.findOne({ userId, courseId }).populate("courseId");
   if (!progress) throw new Error("Course progress not found");
 
+  // Allow tutors to generate even if quiz not passed, as long as course is "completed"
+  if (!progress.completed) throw new Error("Course has not been marked as completed for this student");
+
   if (progress.certificateUrl) return { certificateUrl: progress.certificateUrl };
 
   const course = progress.courseId;
   const certificateId = uuidv4().slice(0, 8).toUpperCase();
-  const today = new Date().toLocaleDateString();
+  const today = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-  const [templateResponse, sealResponse] = await Promise.all([
-    axios.get(TEMPLATE_URL, { responseType: "arraybuffer" }),
-    axios.get(SEAL_IMAGE_URL, { responseType: "arraybuffer" }),
-  ]);
+  const doc = new PDFDocument({
+    size: "A4",
+    layout: "landscape",
+    margins: { top: 0, left: 0, right: 0, bottom: 0 },
+  });
 
-  const templateBuffer = Buffer.from(templateResponse.data, "binary");
-  const sealBuffer = Buffer.from(sealResponse.data, "binary");
-
-  const doc = new PDFDocument({ size: "A4", layout: "landscape" });
   let buffers = [];
-  
-  return new Promise((resolve, reject) => {
+
+  return new Promise(async (resolve, reject) => {
+    let isPromiseDone = false;
     doc.on("data", (data) => buffers.push(data));
     doc.on("end", async () => {
       try {
@@ -648,7 +670,12 @@ const createCertificateLogic = async (userId, courseId) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           { resource_type: "raw", folder: "certificates", access_mode: "public" },
           async (err, result) => {
-            if (err) return reject(err);
+            if (isPromiseDone) return;
+            if (err) {
+              isPromiseDone = true;
+              return reject(err);
+            }
+            isPromiseDone = true;
             progress.certificateUrl = result.secure_url;
             await progress.save();
             resolve({ certificateUrl: result.secure_url });
@@ -656,34 +683,121 @@ const createCertificateLogic = async (userId, courseId) => {
         );
         streamifier.createReadStream(pdfBuffer).pipe(uploadStream);
       } catch (err) {
-        reject(err);
+        if (!isPromiseDone) {
+          isPromiseDone = true;
+          reject(err);
+        }
       }
     });
 
     try {
-      doc.image(templateBuffer, 0, 0, { width: doc.page.width, height: doc.page.height });
-      doc.image(sealBuffer, doc.page.width / 2 - 35, 40, { width: 70 });
-      doc.fontSize(12).fillColor("#000").font("Helvetica");
-      doc.text(`Certificate ID ${certificateId}`, doc.page.width - 200, 80, { align: "left" });
-      doc.fontSize(24).fillColor("#0b0b0c").font("Helvetica-Bold");
-      doc.text("KANO INDEPENDENT RESEARCH CENTRE TRUST", 0, 140, { align: "center" });
-      doc.fontSize(20).fillColor("#e69900").font("Helvetica-Bold");
-      doc.text("Certificate of Completion", 0, 170, { align: "center" });
-      doc.fontSize(34).fillColor("#0c12be").font("Helvetica-Bold");
-      doc.text(user.name, 0, 250, { align: "center" });
-      doc.fontSize(18).fillColor("#000").font("Helvetica");
-      doc.text(`has successfully completed the course "${course.courseTitle}"`, 60, 310, { align: "center", width: doc.page.width - 120 });
-      doc.text(`with a score of ${progress.quizScore}% on ${today}`, 60, 345, { align: "center", width: doc.page.width - 120 });
+      const pageWidth = doc.page.width;
+      const pageHeight = doc.page.height;
 
-      const signatory = "___________________";
-      doc.fontSize(14).fillColor("#0A1D66").font("Helvetica-Bold");
-      doc.text(signatory, 100, 470, { align: "left" });
-      doc.fontSize(12).fillColor("#555").font("Helvetica");
-      doc.text("KIRCT-DG/CEO", 100, 490, { align: "left" });
-      doc.fontSize(14).fillColor("#0A1D66").font("Helvetica-Bold");
-      doc.text(signatory, 0, 470, { align: "right", width: doc.page.width - 100 });
-      doc.fontSize(12).fillColor("#555").font("Helvetica");
-      doc.text("KIRCT-Admin", 0, 490, { align: "right", width: doc.page.width - 100 });
+      // --- Background Design (Precision Geometric Shapes) ---
+      doc.save()
+        .moveTo(0, 0).lineTo(200, 0).lineTo(0, 200).fill("#001F3F") // Dark Navy
+        .moveTo(0, 0).lineTo(150, 0).lineTo(0, 150).fill("#003366") // Slightly lighter navy
+        .moveTo(0, 0).lineTo(80, 0).lineTo(0, 80).fill("#0074D9");   // Light blue tip
+      doc.restore();
+
+      doc.save()
+        .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 200, pageHeight).lineTo(pageWidth, pageHeight - 200).fill("#001F3F")
+        .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 150, pageHeight).lineTo(pageWidth, pageHeight - 150).fill("#003366")
+        .moveTo(pageWidth, pageHeight).lineTo(pageWidth - 80, pageHeight).lineTo(pageWidth, pageHeight - 80).fill("#0074D9");
+      doc.restore();
+
+      // --- Content Layer ---
+
+      // 🏛️ Logo (Centred)
+      try {
+        console.log("Educator generating certificate: fetching logo...");
+        const logoResponse = await axios.get(SEAL_IMAGE_URL, {
+          responseType: "arraybuffer",
+          timeout: 5000 // 5 second timeout
+        });
+        const logoBuffer = Buffer.from(logoResponse.data, "binary");
+        doc.image(logoBuffer, (pageWidth / 2) - 40, 40, { width: 80 });
+        console.log("Educator cert logo fetched successfully");
+      } catch (e) {
+        console.error("Educator cert logo failed or timed out:", e.message);
+      }
+
+      doc.moveDown(5.5);
+      doc.fontSize(22).fillColor("#001F3F").font("Helvetica-Bold");
+      doc.text("KANO INDEPENDENT RESEARCH CENTRE TRUST", 0, 135, { align: "center", characterSpacing: 1 });
+
+      doc.moveDown(1.5);
+      doc.fontSize(28).fillColor("#0074D9").font("Helvetica-Bold"); // Vibrant Blue title
+      doc.text("CERTIFICATE OF ATTENDANCE", { align: "center", characterSpacing: 2 });
+
+      doc.moveDown(1.2);
+      doc.fontSize(14).fillColor("#555").font("Helvetica");
+      doc.text("Presented to :", { align: "center" });
+
+      doc.moveDown(0.8);
+      doc.fontSize(42).fillColor("#000000").font("Times-BoldItalic");
+      doc.text(user.name, { align: "center" });
+
+      // ✍️ Blue underline for Name
+      const nameWidth = doc.widthOfString(user.name);
+      const underlineY = doc.y - 2;
+      doc.moveTo((pageWidth / 2) - (nameWidth / 2) - 30, underlineY)
+        .lineTo((pageWidth / 2) + (nameWidth / 2) + 30, underlineY)
+        .lineWidth(2)
+        .stroke("#0074D9");
+
+      doc.moveDown(0.8);
+      doc.fontSize(16).fillColor("#333").font("Helvetica");
+
+      let dateRangeText = `held on ${today}`;
+      if (course.courseStartDate && course.courseEndDate) {
+        const start = new Date(course.courseStartDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' });
+        const end = new Date(course.courseEndDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' });
+        dateRangeText = `from ${start} to ${end}`;
+      }
+
+      // 🎓 Course Title Styling (Bold, No Italics, Quotes for differentiation)
+      const courseInfoText = `For completing a training on "${course.courseTitle.toUpperCase()}", ${dateRangeText}.`;
+      doc.font("Helvetica-Bold").fontSize(16).fillColor("#333")
+        .text(courseInfoText, 80, doc.y, {
+          align: "center",
+          width: pageWidth - 160,
+          lineGap: 4
+        });
+
+      // 🛡️ Pro Red Seal Graphic (Moved DOWN)
+      const sealX = (pageWidth / 2);
+      const sealY = pageHeight - 85;
+      doc.save();
+      const innerRadius = 45;
+      const outerRadius = 55;
+      const points = 50;
+      doc.moveTo(sealX + outerRadius, sealY);
+      for (let i = 0; i < points * 2; i++) {
+        const angle = (i * Math.PI) / points;
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        doc.lineTo(sealX + radius * Math.cos(angle), sealY + radius * Math.sin(angle));
+      }
+      doc.fill("#C00000");
+      doc.restore();
+
+      // ✍️ Signatories (Symmetric Layout and Lowered)
+      const sigY = pageHeight - 85;
+      const sigWidth = 240;
+
+      // Left Signature
+      doc.fontSize(12).fillColor("#000").font("Helvetica-Bold");
+      doc.moveTo(100, sigY).lineTo(100 + sigWidth, sigY).lineWidth(1).stroke("#000");
+      doc.text("Basheer Isah Waziri (MBBS, PhD)", 100, sigY + 10, { width: sigWidth, align: "center" });
+      doc.fontSize(11).font("Helvetica").text("Program Coordinator", 100, sigY + 25, { width: sigWidth, align: "center" });
+
+      // Right Signature
+      doc.moveTo(pageWidth - 340, sigY).lineTo(pageWidth - 340 + sigWidth, sigY).stroke("#000");
+      doc.fontSize(12).font("Helvetica-Bold").text("Prof. Hamisu Salihu (M.D, PhD)", pageWidth - 340, sigY + 10, { width: sigWidth, align: "center" });
+      doc.fontSize(11).font("Helvetica").text("CEO/Director General", pageWidth - 340, sigY + 25, { width: sigWidth, align: "center" });
+
+      doc.fontSize(8).fillColor("#999").text(`Certificate ID: ${certificateId}`, 40, pageHeight - 30);
       doc.end();
     } catch (e) {
       reject(e);
@@ -757,11 +871,11 @@ export const updateStudentProgress = async (req, res) => {
     const completedCount = progress.lectureCompleted.filter(id => allLectureIds.includes(id)).length;
     const progressPercentage = progress.completed ? 100 : Math.min(100, Math.round((completedCount / totalLectures) * 100));
 
-    res.json({ 
-      success: true, 
-      message: "Progress updated successfully", 
-      progress, 
-      certificateUrl, 
+    res.json({
+      success: true,
+      message: "Progress updated successfully",
+      progress,
+      certificateUrl,
       progressPercentage,
       completedCount,
       totalLectures: allLectureIds.length
@@ -776,7 +890,7 @@ export const resetStudentQuiz = async (req, res) => {
     const { courseId, userId } = req.body;
     await CourseProgress.findOneAndUpdate(
       { userId, courseId },
-      { completed: false, lectureCompleted: [], quizTaken: false, quizScore: 0, quizPassed: false, quizAnswers: [] }
+      { completed: false, lectureCompleted: [], quizTaken: false, quizScore: 0, quizPassed: false, quizAnswers: [], certificateUrl: null }
     );
     res.json({ success: true, message: "Student progress reset successfully" });
   } catch (err) {

@@ -39,7 +39,9 @@ const courseSchema = new mongoose.Schema({
   courseRatings: [{ userId: { type: String }, rating: { type: Number, min: 1, max: 5 } }],
   educator: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
   enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  applicationDeadline: { type: Date }
+  applicationDeadline: { type: Date },
+  courseStartDate: { type: Date },
+  courseEndDate: { type: Date }
 
 }, { timestamps: true, minimize: false })
 
@@ -49,7 +51,7 @@ courseSchema.pre("save", function (next) {
   // Calculate default purchasePrice (legacy support)
   // Discount is now a percentage (0-100)
   const discountFactor = (100 - this.discount) / 100;
-  
+
   this.purchasePrice = Math.max(Math.round(this.coursePrice * discountFactor), 0);
 
   // Calculate Physical and Virtual Purchase Prices
@@ -75,12 +77,12 @@ courseSchema.pre("findOneAndUpdate", function (next) {
     // We need to access the values being updated. 
     // Note: This relies on the update object having the necessary fields.
     // In many cases, only some fields are updated. 
-    
+
     // If discount is provided in update, use it, otherwise we'd need the doc's current discount.
     // For simplicity and safety during educator updates (where usually most fields are sent), 
     // we recalc if the fields are present.
-    
-    const discount = update.discount; 
+
+    const discount = update.discount;
 
     if (discount !== undefined) {
       const discountFactor = (100 - discount) / 100;

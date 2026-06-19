@@ -31,6 +31,8 @@ const UpdateCourse = ({ course }) => {
   const [classSchedule, setClassSchedule] = useState(educatorCourses?.classSchedule || "");
   const [courseDescription, setCourseDescription] = useState(educatorCourses?.courseDescription || "");
   const [applicationDeadline, setApplicationDeadline] = useState(educatorCourses?.applicationDeadline || "");
+  const [courseStartDate, setCourseStartDate] = useState(educatorCourses?.courseStartDate || "");
+  const [courseEndDate, setCourseEndDate] = useState(educatorCourses?.courseEndDate || "");
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -183,6 +185,8 @@ const UpdateCourse = ({ course }) => {
       setClassSchedule(educatorCourses.classSchedule || "");
       setDiscount(educatorCourses.discount || 0);
       setApplicationDeadline(educatorCourses.applicationDeadline ? new Date(educatorCourses.applicationDeadline).toISOString().split('T')[0] : "");
+      setCourseStartDate(educatorCourses.courseStartDate ? new Date(educatorCourses.courseStartDate).toISOString().split('T')[0] : "");
+      setCourseEndDate(educatorCourses.courseEndDate ? new Date(educatorCourses.courseEndDate).toISOString().split('T')[0] : "");
 
       // Ensure chapters are set correctly
       if (educatorCourses.courseContent && Array.isArray(educatorCourses.courseContent)) {
@@ -223,7 +227,9 @@ const UpdateCourse = ({ course }) => {
         classSchedule,
         discount: Number(discount),
         courseContent: chapters,
-        applicationDeadline: applicationDeadline,
+        applicationDeadline: applicationDeadline || null,
+        courseStartDate: courseStartDate || null,
+        courseEndDate: courseEndDate || null,
       };
 
       const formData = new FormData();
@@ -351,6 +357,28 @@ const UpdateCourse = ({ course }) => {
           <p className="text-xs text-gray-500 mt-1">
             Last date for students to register.
           </p>
+        </div>
+
+        {/* Course Training Dates */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-gray-700 mb-2 font-semibold">Course Start Date</label>
+            <input
+              type="date"
+              value={courseStartDate}
+              onChange={e => setCourseStartDate(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 mb-2 font-semibold">Course End Date</label>
+            <input
+              type="date"
+              value={courseEndDate}
+              onChange={e => setCourseEndDate(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         {/* Virtual Details */}

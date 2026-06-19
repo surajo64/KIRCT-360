@@ -36,6 +36,7 @@ const StudentEnrolled = () => {
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [modalCourseContent, setModalCourseContent] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [updatingCourse, setUpdatingCourse] = useState(false);
 
   const openProgressModal = async (student) => {
     setSelectedEnrollment(student);
@@ -58,6 +59,7 @@ const StudentEnrolled = () => {
   const handleProgressUpdate = async ({ lectureId, markAsCompleted, chapterId, isCourseCompleted }) => {
     if (!selectedEnrollment) return;
     setIsUpdating(true);
+    if (isCourseCompleted !== undefined) setUpdatingCourse(true);
     try {
       const { data } = await axios.post(`${backendUrl}/api/educator/update-student-progress`, {
         userId: selectedEnrollment.student._id,
@@ -115,6 +117,7 @@ const StudentEnrolled = () => {
       toast.error(error.message);
     } finally {
       setIsUpdating(false);
+      setUpdatingCourse(false);
     }
   }
 
@@ -209,7 +212,7 @@ const StudentEnrolled = () => {
                         ></div>
                       </div>
                       <span className="text-[10px] text-gray-600">
-                        {student.completedCount !== undefined && student.totalLectures !== undefined 
+                        {student.completedCount !== undefined && student.totalLectures !== undefined
                           ? `${student.completedCount}/${student.totalLectures} (${student.progressPercentage}%)`
                           : `${student.progressPercentage || (student.progress === 'Completed' ? 100 : 0)}%`
                         }
@@ -217,7 +220,9 @@ const StudentEnrolled = () => {
                     </div>
                   </td>
                   <td className="px-4 py-3 group relative cursor-help">
-                    {student.quizTaken ? (
+                    {!student.hasQuiz ? (
+                      <span className="text-gray-400 text-xs italic">Non Quize Course</span>
+                    ) : student.quizTaken ? (
                       <div className="relative inline-block">
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${student.quizPassed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                           {student.quizPassed ? "Passed" : "Failed"}
@@ -261,7 +266,7 @@ const StudentEnrolled = () => {
                         </button>
                       )}
 
-                      {student.quizTaken && !student.quizPassed && (
+                      {(student.certificateUrl || (student.quizTaken && !student.quizPassed)) && (
                         <button
                           onClick={() => handleRetakeQuiz(student)}
                           className="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-[10px] font-semibold border border-red-200"
@@ -295,12 +300,17 @@ const StudentEnrolled = () => {
               <button
                 disabled={isUpdating}
                 onClick={() => handleProgressUpdate({ isCourseCompleted: selectedEnrollment.progress !== "Completed" })}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
-                    ? "bg-red-100 text-red-700 hover:bg-red-200"
-                    : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                className={`px-3 py-1.5 text-xs font-bold flex items-center justify-center gap-2 rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
+                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                  : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
                   }`}
               >
-                {selectedEnrollment.progress === "Completed" ? "Unmark Course Completed" : "Mark Full Course Completed"}
+                {updatingCourse && <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>}
+                {updatingCourse
+                  ? "Updating..."
+                  : selectedEnrollment.progress === "Completed"
+                    ? "Unmark Course Completed"
+                    : "Mark Full Course Completed"}
               </button>
             </div>
 

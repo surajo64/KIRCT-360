@@ -17,6 +17,7 @@ const AllStudentEnrolled = () => {
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [modalCourseContent, setModalCourseContent] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [updatingCourse, setUpdatingCourse] = useState(false);
 
   const fetchEnrolledStudents = async () => {
     try {
@@ -95,6 +96,7 @@ const AllStudentEnrolled = () => {
   const handleProgressUpdate = async ({ lectureId, markAsCompleted, chapterId, isCourseCompleted }) => {
     if (!selectedEnrollment) return;
     setIsUpdating(true);
+    if (isCourseCompleted !== undefined) setUpdatingCourse(true);
     try {
       const { data } = await axios.post(`${backendUrl}/api/educator/update-student-progress`, {
         userId: selectedEnrollment.student._id,
@@ -146,6 +148,7 @@ const AllStudentEnrolled = () => {
       toast.error(error.message);
     } finally {
       setIsUpdating(false);
+      setUpdatingCourse(false);
     }
   };
 
@@ -310,7 +313,7 @@ const AllStudentEnrolled = () => {
                           ></div>
                         </div>
                         <span className="text-[10px] text-gray-600">
-                          {student.completedCount !== undefined && student.totalLectures !== undefined 
+                          {student.completedCount !== undefined && student.totalLectures !== undefined
                             ? `${student.completedCount}/${student.totalLectures} (${student.progressPercentage}%)`
                             : `${student.progressPercentage}%`
                           }
@@ -386,12 +389,17 @@ const AllStudentEnrolled = () => {
               <button
                 disabled={isUpdating}
                 onClick={() => handleProgressUpdate({ isCourseCompleted: selectedEnrollment.progress !== "Completed" })}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
-                    ? "bg-red-100 text-red-700 hover:bg-red-200"
-                    : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                className={`px-3 py-1.5 text-xs font-bold flex items-center justify-center gap-2 rounded-lg transition shadow-sm ${selectedEnrollment.progress === "Completed"
+                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                  : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
                   }`}
               >
-                {selectedEnrollment.progress === "Completed" ? "Unmark Course Completed" : "Mark Full Course Completed"}
+                {updatingCourse && <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>}
+                {updatingCourse
+                  ? "Updating..."
+                  : selectedEnrollment.progress === "Completed"
+                    ? "Unmark Course Completed"
+                    : "Mark Full Course Completed"}
               </button>
             </div>
 
