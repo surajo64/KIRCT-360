@@ -855,25 +855,25 @@ export const getCertificate = async (req, res) => {
         timeout: 5000 // 5 second timeout to prevent hangs
       });
       const logoBuffer = Buffer.from(logoResponse.data, "binary");
-      doc.image(logoBuffer, (pageWidth / 2) - 40, 40, { width: 80 });
+      doc.image(logoBuffer, (pageWidth / 2) - 30, 30, { width: 70 });
       console.log("Logo fetched and drawn successfully");
     } catch (e) {
       console.error("Logo failed to load or timed out:", e.message);
     }
 
+    // Institution Name
     doc.moveDown(5.5);
-    doc.fontSize(22).fillColor("#001F3F").font("Helvetica-Bold");
-    doc.text("KANO INDEPENDENT RESEARCH CENTRE TRUST", 0, 135, { align: "center", characterSpacing: 1 });
+    doc.font("Helvetica-Bold").fontSize(22).fillColor("#002147").text("KANO INDEPENDENT RESEARCH CENTRE TRUST(KIRCT)", 0, 125, { align: "center", characterSpacing: 0.2, });
 
-    doc.moveDown(1.5);
-    doc.fontSize(28).fillColor("#0074D9").font("Helvetica-Bold"); // Vibrant Blue title
-    doc.text("CERTIFICATE OF ATTENDANCE", { align: "center", characterSpacing: 2 });
+    // Workshop Series
+    doc.moveDown(0.3);
+    doc.font("Helvetica-Oblique").fontSize(18).fillColor("#0056B3").text("National Bioinformatics Workshop Series", { align: "center", characterSpacing: 2, });
 
-    doc.moveDown(1.2);
-    doc.fontSize(14).fillColor("#555").font("Helvetica");
-    doc.text("Presented to :", { align: "center" });
+    doc.moveDown(2.0);
+    doc.fontSize(16).fillColor("#555").font("Helvetica-Oblique");
+    doc.text("On the Recommendation of the Faculty Certifies that", { align: "center", });
 
-    doc.moveDown(0.8);
+    doc.moveDown(1.0);
     doc.fontSize(42).fillColor("#000000").font("Times-BoldItalic");
     doc.text(user.name, { align: "center" });
 
@@ -896,7 +896,7 @@ export const getCertificate = async (req, res) => {
     }
 
     // 🎓 Course Title Styling (Bold, No Italics, Quotes for differentiation)
-    const courseInfoText = `For completing a training on "${course.courseTitle.toUpperCase()}", ${dateRangeText}.`;
+    const courseInfoText = `Has Successfully Completed the one Week"${course.courseTitle.toUpperCase()}", has Successifully Passed the end of Course Assessment held at KIRCT Conference Room June 2026.`;
     doc.font("Helvetica-Bold").fontSize(16).fillColor("#333")
       .text(courseInfoText, 80, doc.y, {
         align: "center",
