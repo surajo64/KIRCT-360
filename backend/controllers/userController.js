@@ -369,6 +369,10 @@ export const purchaseCourse = async (req, res) => {
       return res.json({ success: false, message: "User or Course not found" });
     }
 
+    if (!course.isActive) {
+      return res.json({ success: true, isInactive: true, message: "Course registration is completed. New enrollments are not allowed." });
+    }
+
     // Determine price based on attendance type
     let price = 0;
     if (attendanceType === 'Physical') {

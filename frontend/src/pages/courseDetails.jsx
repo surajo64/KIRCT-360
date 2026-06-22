@@ -318,12 +318,12 @@ const CourseCard = ({
         <img className="w-3.5 h-3.5" src={assets.time_left_clock_icon} alt="clock" />
         <span>
           <strong>Application Deadline:</strong>{" "}
-          {courseData.applicationDeadline 
+          {courseData.applicationDeadline
             ? new Date(courseData.applicationDeadline).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-              })
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
             : "To be announced"}
         </span>
       </div>
@@ -351,8 +351,8 @@ const CourseCard = ({
               key={type}
               onClick={() => setAttendanceType(type)}
               className={`flex-1 py-2 text-sm rounded-lg border font-medium transition ${attendanceType === type
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
                 }`}
             >
               {type} Class
@@ -388,8 +388,11 @@ const CourseCard = ({
       {/* CTA button */}
       <button
         onClick={enrollCourse}
-        disabled={isEnrolling || isAlreadEnrolled}
-        className="mt-4 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+        disabled={isEnrolling || isAlreadEnrolled || courseData.isActive === false}
+        className={`mt-4 w-full py-3 font-semibold rounded-xl transition disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base ${courseData.isActive === false
+            ? 'bg-red-50 text-red-600 border border-red-100'
+            : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }`}
       >
         {isEnrolling ? (
           <>
@@ -399,8 +402,15 @@ const CourseCard = ({
             </svg>
             Processing...
           </>
-        ) : isAlreadEnrolled ? '✓ Already Enrolled' : 'Enroll Now'}
+        ) : courseData.isActive === false ? (
+          '🚫 Course registration Completed'
+        ) : isAlreadEnrolled ? (
+          '✓ Already Enrolled'
+        ) : (
+          'Enroll Now'
+        )}
       </button>
+
 
       {/* What's included */}
       <div className="mt-5 pt-4 border-t border-gray-100">

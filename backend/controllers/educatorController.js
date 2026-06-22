@@ -229,6 +229,7 @@ export const updateCourse = async (req, res) => {
     existingCourse.applicationDeadline = parsedCourseData.applicationDeadline || null;
     existingCourse.courseStartDate = parsedCourseData.courseStartDate || null;
     existingCourse.courseEndDate = parsedCourseData.courseEndDate || null;
+    existingCourse.isActive = parsedCourseData.isActive ?? existingCourse.isActive;
 
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path);
@@ -282,6 +283,24 @@ export const togglePublish = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const toggleActive = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { isActive } = req.body;
+
+    const course = await Course.findByIdAndUpdate(courseId, { isActive }, { new: true });
+
+    if (!course) {
+      return res.json({ success: false, message: "Course not found" });
+    }
+
+    res.json({ success: true, course });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 export const educatorDashboardData = async (req, res) => {
   try {

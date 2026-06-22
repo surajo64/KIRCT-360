@@ -21,11 +21,19 @@ const CourseCard = ({ course }) => {
   return (
     <Link to={'/course/' + course._id} className="border border-gray-500/30 pb-6 overflow-hidden rounded-lg relative">
       <img src={course.courseThumbnail} alt="title" className="w-full h-48 object-cover" />
-      <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-semibold shadow-sm text-gray-700 space-x-1">
-        {course.courseMode === 'Physical' && <span>🏢 Physical</span>}
-        {course.courseMode === 'Virtual' && <span>💻 Virtual</span>}
-        {(course.courseMode === 'Both' || !course.courseMode) && <span>🔄 Hybrid</span>}
+      <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+        <div className="bg-white/90 px-2 py-1 rounded text-xs font-semibold shadow-sm text-gray-700 space-x-1">
+          {course.courseMode === 'Physical' && <span>🏢 Physical</span>}
+          {course.courseMode === 'Virtual' && <span>💻 Virtual</span>}
+          {(course.courseMode === 'Both' || !course.courseMode) && <span>🔄 Hybrid</span>}
+        </div>
+        {course.isActive === false && (
+          <div className="bg-red-500/90 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm animate-pulse">
+            🚫 Registration Completed
+          </div>
+        )}
       </div>
+
       <div className="p-6 text-left">
         <h3 className="text-base font-semibold">{course.courseTitle}</h3>
         <p className="text-gray-500">{course.educator?.name}</p>

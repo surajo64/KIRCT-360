@@ -6,7 +6,7 @@ import Course from "../models/courseModel.js"
 
 export const getAllCourse = async (req, res) => {
   try {
-    const courses = await Course.find({}).select("-courseContent").populate({ path: 'educator' })
+    const courses = await Course.find({ isPublished: true }).select("-courseContent").populate({ path: 'educator' })
 
     console.log(`Fetched ${courses.length} courses from DB`);
     res.json({ success: true, courses })

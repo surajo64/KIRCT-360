@@ -35,6 +35,7 @@ const courseSchema = new mongoose.Schema({
   purchasePricePhysical: { type: Number, default: 0 },
   purchasePriceVirtual: { type: Number, default: 0 },
   isPublished: { type: Boolean, default: true },
+  isActive: { type: Boolean, default: true },
   courseContent: [chapterSchema],
   courseRatings: [{ userId: { type: String }, rating: { type: Number, min: 1, max: 5 } }],
   educator: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },

@@ -7,7 +7,7 @@ import axios from 'axios';
 
 
 const MyCourses = () => {
-  const { currencySymbol, atoken, educatorCourses, cost, setCourse,backendUrl, fetchEducatorCourses } = useContext(AppContext);
+  const { currencySymbol, atoken, educatorCourses, cost, setCourse, backendUrl, fetchEducatorCourses } = useContext(AppContext);
   const navigate = useNavigate();
   const [publishedData, setPublishedData] = useState([])
 
@@ -20,20 +20,14 @@ const MyCourses = () => {
 
   const handleTogglePublish = async (courseId, newStatus) => {
     try {
-      const { data } = await axios.post(backendUrl+
+      const { data } = await axios.post(backendUrl +
         `/api/educator/toggle-publish/${courseId}`,
-        { isPublished: newStatus }, { headers: { atoken }}
+        { isPublished: newStatus }, { headers: { atoken } }
       );
 
       if (data.success) {
-        // Update local state
-        setPublishedData(prev =>
-          prev.map(c =>
-            c._id === courseId ? { ...c, isPublished: newStatus } : c
-          )
-        );
+        toast.success(`Course is now ${newStatus ? "Live" : "Private"}`);
         fetchEducatorCourses();
-        toast.success(`Course is now ${newStatus ? "Active" : "Inactive"}`);
       }
     } catch (error) {
       console.error(error);
@@ -41,8 +35,26 @@ const MyCourses = () => {
     }
   };
 
+  const handleToggleActive = async (courseId, newStatus) => {
+    try {
+      const { data } = await axios.post(backendUrl +
+        `/api/educator/toggle-active/${courseId}`,
+        { isActive: newStatus }, { headers: { atoken } }
+      );
+
+      if (data.success) {
+        toast.success(`Course is now ${newStatus ? "Active" : "Inactive"}`);
+        fetchEducatorCourses();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update status");
+    }
+  };
+
+
   useEffect(() => {
-      fetchEducatorCourses();
+    fetchEducatorCourses();
   }, [educatorCourses]);
 
 
@@ -83,7 +95,7 @@ const MyCourses = () => {
                         {course.courseTitle}
                       </span>
                     </td>
-                    
+
                     <td className="px-4 py-3">
                       {currencySymbol} {course.purchasePrice || 0}
                     </td>
@@ -99,23 +111,46 @@ const MyCourses = () => {
                       {new Date(course.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={course.isPublished ? "text-green-600 font-medium" : "text-red-500 font-medium"}>
-                          {course.isPublished ? "Live" : "InActive"}
+                      <div className="flex flex-col gap-1">
+                        <span className={course.isPublished ? "text-green-600 font-medium text-xs" : "text-gray-500 font-medium text-xs"}>
+                          {course.isPublished ? "Live" : "Draft"}
                         </span>
+                        <span className={course.isActive !== false ? "text-blue-600 font-medium text-xs" : "text-red-500 font-medium text-xs"}>
+                          {course.isActive !== false ? "Active" : "Inactive"}
+                        </span>
+                      </div>
                     </td>
+
                     <td className="px-4 py-3 flex items-center gap-3">
                       {/* Status Checkbox */}
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={course.isPublished} // assumes course schema has `isPublished: Boolean`
-                          onChange={() => handleTogglePublish(course._id, !course.isPublished)}
-                          className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className={course.isPublished ? "text-green-600 font-medium" : "text-red-500 font-medium"}>
-                          {course.isPublished ? "Active" : "InActive"}
-                        </span>
-                      </label>
+                      <div className="flex flex-col gap-2">
+                        {/* Publish Toggle */}
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={course.isPublished}
+                            onChange={() => handleTogglePublish(course._id, !course.isPublished)}
+                            className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className={course.isPublished ? "text-green-600 font-medium text-[10px]" : "text-gray-500 font-medium text-[10px]"}>
+                            {course.isPublished ? "Published" : "Draft"}
+                          </span>
+                        </label>
+
+                        {/* Active Toggle */}
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={course.isActive !== false}
+                            onChange={() => handleToggleActive(course._id, course.isActive !== false ? false : true)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className={course.isActive !== false ? "text-blue-600 font-medium text-[10px]" : "text-red-500 font-medium text-[10px]"}>
+                            {course.isActive !== false ? "Active" : "Inactive"}
+                          </span>
+                        </label>
+                      </div>
+
 
                       {/* Quiz Button */}
                       <button

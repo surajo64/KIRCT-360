@@ -9,6 +9,7 @@ import {
     educatorCourses,
     updateCourse,
     togglePublish,
+    toggleActive,
     educatorDashboardData,
     enrolledStudentsData,
     allCourses,
@@ -43,6 +44,7 @@ educatorRouter.post('/add-course', upload.single('image'), authAdmin, addCourse)
 educatorRouter.get('/my-courses', authAdmin, educatorCourses);
 educatorRouter.post('/update-course', upload.single('image'), authAdmin, updateCourse);
 educatorRouter.post('/toggle-publish/:courseId', authAdmin, togglePublish);
+educatorRouter.post('/toggle-active/:courseId', authAdmin, toggleActive);
 educatorRouter.get('/all-courses', authAdmin, allCourses);
 educatorRouter.get('/course/:courseId', authAdmin, getCourseById);
 educatorRouter.delete('/delete-course/:courseId', authAdmin, deleteCourse);

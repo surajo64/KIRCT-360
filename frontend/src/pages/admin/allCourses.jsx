@@ -75,7 +75,7 @@ const AllCourses = () => {
       );
 
       if (data.success) {
-        toast.success(`Course is now ${newStatus ? "Active" : "Inactive"}`);
+        toast.success(`Course is now ${newStatus ? "Published" : "Draft"}`);
         // Update local state
         const updateState = (prev) => prev.map(c =>
           c._id === courseId ? { ...c, isPublished: newStatus } : c
@@ -90,6 +90,32 @@ const AllCourses = () => {
       toast.error("Failed to update status");
     }
   };
+
+  const handleToggleActive = async (courseId, newStatus) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/educator/toggle-active/${courseId}`,
+        { isActive: newStatus },
+        { headers: { atoken } }
+      );
+
+      if (data.success) {
+        toast.success(`Course is now ${newStatus ? "Active" : "Inactive"}`);
+        // Update local state
+        const updateState = (prev) => prev.map(c =>
+          c._id === courseId ? { ...c, isActive: newStatus } : c
+        );
+        setCourses(updateState);
+        setFilteredCourses(updateState);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update status");
+    }
+  };
+
 
   return courses ? (
     <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
@@ -163,21 +189,38 @@ const AllCourses = () => {
                     </td>
 
                     <td className="px-4 py-3">
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={course.isPublished}
-                          onChange={() => handleTogglePublish(course._id, !course.isPublished)}
-                          className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${course.isPublished
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                          }`}>
-                          {course.isPublished ? 'Published' : 'Draft'}
-                        </span>
-                      </label>
+                      <div className="flex flex-col gap-2">
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={course.isPublished}
+                            onChange={() => handleTogglePublish(course._id, !course.isPublished)}
+                            className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${course.isPublished
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                            }`}>
+                            {course.isPublished ? 'Published' : 'Draft'}
+                          </span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={course.isActive}
+                            onChange={() => handleToggleActive(course._id, !course.isActive)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${course.isActive
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}>
+                            {course.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </label>
+                      </div>
                     </td>
+
 
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
