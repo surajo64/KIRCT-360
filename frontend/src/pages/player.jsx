@@ -314,7 +314,7 @@ const Player = () => {
                     <Link to={`/quiz/${courseId}`} className="text-blue-600 font-medium">Ready for Quiz?</Link>
                   ) : progressData.quizPassed ? (
                     progressData.certificateUrl ? (
-                      <a href={progressData.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-green-600 font-medium">🎉 View Certificate</a>
+                      <a href={progressData.certificateUrl} target="_blank" rel="noopener noreferrer" download="certificate.pdf" className="text-green-600 font-medium">🎉 View Certificate</a>
                     ) : (
                       <button onClick={generateCertificate} disabled={isGenerating} className={`font-medium px-4 py-1 rounded transition-all ${isGenerating ? 'bg-gray-100 text-gray-400 cursor-wait' : 'text-blue-600 hover:bg-blue-50 bg-white border border-blue-200'}`}>
                         {isGenerating ? (<span className="flex items-center gap-2"><span className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></span>Generating...</span>) : ("📜 Generate Certificate")}
@@ -334,7 +334,7 @@ const Player = () => {
                   )
                 ) : (
                   progressData.certificateUrl ? (
-                    <a href={progressData.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-green-600 font-medium">🎉 View Certificate</a>
+                    <a href={progressData.certificateUrl} target="_blank" rel="noopener noreferrer" download="certificate.pdf" className="text-green-600 font-medium">🎉 View Certificate</a>
                   ) : (
                     <button onClick={generateCertificate} disabled={isGenerating} className={`font-medium px-4 py-1 rounded transition-all ${isGenerating ? 'bg-gray-100 text-gray-400 cursor-wait' : 'text-blue-600 hover:bg-blue-50 bg-white border border-blue-200'}`}>
                       {isGenerating ? (<span className="flex items-center gap-2"><span className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></span>Generating...</span>) : ("📜 Generate Certificate")}

@@ -337,6 +337,7 @@ const AllStudentEnrolled = () => {
                             href={student.certificateUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            download="certificate.pdf"
                             className="px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-[10px] font-semibold border border-blue-200"
                           >
                             PDF
