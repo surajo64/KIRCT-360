@@ -122,7 +122,7 @@ export const drawCertificationText = (doc, user, course, today, pageWidth) => {
     // Details (Location and Date)
     doc.moveDown(0.3);
     doc.font("Helvetica-Bold")
-        .text("Held at KIRCT Conference Room", 0, doc.y, {
+        .text("Held at KIRCT", 0, doc.y, {
             align: "center",
             width: pageWidth
         });
