@@ -1,6 +1,14 @@
 import axios from 'axios';
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const HAMISU_SIG_PATH = path.join(__dirname, '..', 'public', 'signatures', 'hamisu_signature.png');
+const BASHEER_SIG_PATH = path.join(__dirname, '..', 'public', 'signatures', 'basheer_signature.png');
 
 const SEAL_IMAGE_URL = "https://res.cloudinary.com/dyii5iyqq/image/upload/v1756986671/logo_arebic.png";
 
@@ -154,11 +162,11 @@ export const drawCertificationText = (doc, user, course, today, pageWidth) => {
  */
 export const drawSeal = (doc, pageWidth, pageHeight) => {
     const sealX = pageWidth / 2;
-    const sealY = pageHeight - 85;
+    const sealY = pageHeight - 90; // Moved down (was -95)
 
     doc.save();
-    const innerRadius = 45;
-    const outerRadius = 55;
+    const innerRadius = 50;
+    const outerRadius = 60;
     const points = 50;
 
     doc.moveTo(sealX + outerRadius, sealY);
@@ -176,35 +184,49 @@ export const drawSeal = (doc, pageWidth, pageHeight) => {
  */
 export const drawSignatories = (doc, pageWidth, pageHeight) => {
     const sigY = pageHeight - 85;
-    const sigWidth = 240;
+    const margin = 130;
+    const sigWidth = 210; // Increased width to prevent name wrapping
 
-    // Left Signature - Program Coordinator
+    // Left Signature - Program Coordinator (Dr. Basheer)
+    try {
+        doc.image(BASHEER_SIG_PATH, margin + (sigWidth / 2) - 60, sigY - 65, { width: 120 });
+    } catch (error) {
+        console.error("Basheer signature failed to load:", error.message);
+    }
+
     doc.fontSize(12)
         .fillColor("#000")
         .font("Helvetica-Bold");
-    doc.moveTo(100, sigY).lineTo(100 + sigWidth, sigY).lineWidth(1).stroke("#000");
-    doc.text("Dr. Basheer Isah Waziri (MBBS, PhD)", 100, sigY + 10, {
+    doc.moveTo(margin, sigY).lineTo(margin + sigWidth, sigY).lineWidth(1).stroke("#000"); // Moved line to start at margin
+    doc.text("Dr. Basheer Isah Waziri (MBBS, PhD)", margin, sigY + 10, {
         width: sigWidth,
         align: "center",
     });
     doc.fontSize(11)
         .font("Helvetica")
-        .text("Program Coordinator", 100, sigY + 25, {
+        .text("Program Coordinator", margin, sigY + 28, {
             width: sigWidth,
             align: "center",
         });
 
-    // Right Signature - CEO/Director General
-    doc.moveTo(pageWidth - 340, sigY).lineTo(pageWidth - 340 + sigWidth, sigY).stroke("#000");
+    // Right Signature - CEO/Director General (Prof. Hamisu)
+    try {
+        doc.image(HAMISU_SIG_PATH, (pageWidth - margin - sigWidth) + (sigWidth / 2) - 60, sigY - 65, { width: 120 });
+    } catch (error) {
+        console.error("Hamisu signature failed to load:", error.message);
+    }
+
+    const rightStartX = pageWidth - margin - sigWidth;
+    doc.moveTo(rightStartX, sigY).lineTo(rightStartX + sigWidth, sigY).stroke("#000");
     doc.fontSize(12)
         .font("Helvetica-Bold")
-        .text("Prof. Hamisu Salihu (M.D, PhD)", pageWidth - 340, sigY + 10, {
+        .text("Prof. Hamisu Salihu (M.D, PhD)", rightStartX, sigY + 10, {
             width: sigWidth,
             align: "center",
         });
     doc.fontSize(11)
         .font("Helvetica")
-        .text("CEO/Director General", pageWidth - 340, sigY + 25, {
+        .text("CEO/Director General", rightStartX, sigY + 28, {
             width: sigWidth,
             align: "center",
         });
@@ -214,9 +236,12 @@ export const drawSignatories = (doc, pageWidth, pageHeight) => {
  * Draws the certificate ID footer
  */
 export const drawCertificateFooter = (doc, pageWidth, certificateId) => {
-    doc.fontSize(8)
-        .fillColor("#999")
-        .text(`Certificate ID: ${certificateId}`, 40, doc.page.height - 30);
+    doc.fontSize(10)
+        .fillColor("#777")
+        .text(`ID: ${certificateId}`, pageWidth - 140, 30, {
+            width: 110,
+            align: "right"
+        });
 };
 
 /**
