@@ -103,6 +103,24 @@ const National = () => {
             Building.
           </p>
         </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            National Institute for Cancer Research and Treatment (NICRAT)
+          </h3>
+          {/* <p className="text-gray-700 mt-2">
+            Collaboration Focus:?
+          </p> */}
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            The Nigeria Centre for Disease Control and Prevention (NCDC)
+          </h3>
+          {/* <p className="text-gray-700 mt-2">
+            Collaboration Focus:?
+          </p> */}
+        </div>
       </div>
     </section>
   );

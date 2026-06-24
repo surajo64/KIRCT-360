@@ -102,7 +102,7 @@ const Navbar = () => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           setToken(data.token);
-          
+
           setName("");
           setEmail("");
           setPhone("");
@@ -266,7 +266,7 @@ const Navbar = () => {
       items: [
         { name: "About Us", path: "/about" },
         { name: "Meet Our DG", path: "/about-dg" },
-         { name: "Board of Trustees", path: "/board" },
+        { name: "Board of Trustees", path: "/board" },
         { name: "Our Management ", path: "/team" },
         { name: "Facility Description", path: "/facility" },
         { name: "Grant Management", path: "/grant" },
@@ -283,6 +283,7 @@ const Navbar = () => {
         { name: "Maternal & Child Health", path: "/maternal-child" },
         { name: "Health Metrics & AI", path: "/health-metrics" },
         { name: "Hospital Complex", path: "/hospital-complex" },
+        { name: "Climate Resilience Action Group", path: "/climate-resilience" },
       ],
     },
     {
@@ -975,7 +976,7 @@ const Navbar = () => {
                     className="px-5 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {isSubmitting ? (
-                      <><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Saving...</>
+                      <><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Saving...</>
                     ) : "Save Changes"}
                   </button>
                 </>

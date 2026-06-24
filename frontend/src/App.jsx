@@ -39,6 +39,7 @@ import National from './pages/national'
 import Clinical from './pages/clinical'
 import ResearchLab from './pages/researchLab'
 import Intenship from './pages/intenship'
+import ClimateResilience from './pages/climateResilience'
 import Job from './pages/job'
 import JobApplication from './pages/JobApplication'
 import Completed from './pages/TraningCompleted'
@@ -131,6 +132,7 @@ const App = () => {
             <Route path='/maternal-child' element={<Maternal />} />
             <Route path='/health-metrics' element={<Health />} />
             <Route path='/hospital-complex' element={<Hospital />} />
+            <Route path='/climate-resilience' element={<ClimateResilience />} />
             <Route path='/genomics' element={<Genomics />} />
             <Route path='/microbiology' element={<Microbiology />} />
             <Route path='/tb-unit' element={<TbUnit />} />

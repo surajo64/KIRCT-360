@@ -7,6 +7,7 @@ import doc2 from '../assets/doc2.png';
 import doc3 from '../assets/doc3.png';
 import doc4 from '../assets/doc4.png';
 import doc5 from '../assets/doc5.png';
+import crag1 from '../assets/crag1.jpg';
 
 const Header = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -53,6 +54,14 @@ const Header = () => {
       content: "Our state-of-the-art research facilities support groundbreaking discoveries across multiple disciplines with cutting-edge technology.",
       buttonText: "READ MORE",
       link: "/research-studies"
+    },
+    {
+      id: 6,
+      image: crag1,
+      title: "CLIMATE RESILIENCE ACTION GROUP (CRAG)",
+      content: "CRAG addresses the growing impacts of climate change on health, livelihoods, and the environment through research and community resilience.",
+      buttonText: "LEARN MORE",
+      link: "/climate-resilience"
     }
   ];
 
@@ -106,13 +115,12 @@ const Header = () => {
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-all duration-500 ease-out ${
-                index === currentSlide
+              className={`absolute inset-0 transition-all duration-500 ease-out ${index === currentSlide
                   ? 'opacity-100 translate-x-0 scale-100'
                   : index < currentSlide
-                  ? 'opacity-0 -translate-x-full scale-95'
-                  : 'opacity-0 translate-x-full scale-95'
-              } ${isAnimating ? 'transition-all duration-500 ease-out' : ''}`}
+                    ? 'opacity-0 -translate-x-full scale-95'
+                    : 'opacity-0 translate-x-full scale-95'
+                } ${isAnimating ? 'transition-all duration-500 ease-out' : ''}`}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
                 {/* Image Side - Left with Premium Animations */}
@@ -122,22 +130,21 @@ const Header = () => {
                     <img
                       src={slide.image}
                       alt={slide.title}
-                      className={`w-full h-full object-cover object-center transition-all duration-1000 ease-out ${
-                        index === currentSlide 
-                          ? 'scale-100 group-hover/image-container:scale-105' 
+                      className={`w-full h-full object-cover object-center transition-all duration-1000 ease-out ${index === currentSlide
+                          ? 'scale-100 group-hover/image-container:scale-105'
                           : 'scale-110'
-                      }`}
+                        }`}
                       loading="lazy"
                     />
-                    
+
                     {/* Multi-layer Gradient Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60 group-hover/image-container:opacity-80 transition-opacity duration-500"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-900/15 via-blue-600/10 to-transparent lg:from-blue-900/10 lg:via-blue-700/5 lg:to-transparent"></div>
-                    
+
                     {/* Animated Shine Effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/image-container:translate-x-full transition-transform duration-1500 ease-in-out delay-300"></div>
                   </div>
-                  
+
                   {/* Enhanced Slide Number Badge */}
                   <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-blue-800 text-white w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center font-bold text-sm sm:text-base lg:text-xl shadow-2xl hover:shadow-3xl transform hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer backdrop-blur-sm border border-white/20">
                     <span className="drop-shadow-sm">{index + 1}</span>
@@ -236,12 +243,12 @@ const Header = () => {
                     {/* Enhanced Read More Button */}
                     <div className="transform hover:translate-x-2 transition-transform duration-300">
                       <Link
-  to={slide.link}
-  className="relative inline-block px-8 py-3 font-semibold text-white text-sm lg:text-base bg-red-600 hover:bg-red-700 transition-all duration-300 [clip-path:polygon(0_0,calc(100%-15px)_0,100%_50%,calc(100%-15px)_100%,0_100%,0_0)] rounded-l-full"
->
-  <span className="tracking-wide">{slide.buttonText}</span>
-  <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">{'>'}</span>
-</Link>
+                        to={slide.link}
+                        className="relative inline-block px-8 py-3 font-semibold text-white text-sm lg:text-base bg-red-600 hover:bg-red-700 transition-all duration-300 [clip-path:polygon(0_0,calc(100%-15px)_0,100%_50%,calc(100%-15px)_100%,0_100%,0_0)] rounded-l-full"
+                      >
+                        <span className="tracking-wide">{slide.buttonText}</span>
+                        <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">{'>'}</span>
+                      </Link>
 
                     </div>
                   </div>
@@ -265,7 +272,7 @@ const Header = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        
+
         <button
           onClick={nextSlide}
           disabled={isAnimating}
@@ -284,11 +291,10 @@ const Header = () => {
               key={index}
               onClick={() => goToSlide(index)}
               disabled={isAnimating}
-              className={`w-2 h-2 lg:w-3 lg:h-3 rounded-full transition-all duration-300 transform hover:scale-150 ${
-                index === currentSlide 
-                  ? 'bg-red-600 scale-125 shadow-lg' 
+              className={`w-2 h-2 lg:w-3 lg:h-3 rounded-full transition-all duration-300 transform hover:scale-150 ${index === currentSlide
+                  ? 'bg-red-600 scale-125 shadow-lg'
                   : 'bg-white/70 hover:bg-white/90'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
@@ -296,9 +302,9 @@ const Header = () => {
 
         {/* Enhanced Progress Bar */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200/50 z-20 backdrop-blur-sm">
-          <div 
+          <div
             className="h-full bg-gradient-to-r from-red-600 to-red-500 transition-all duration-5000 ease-out rounded-r-full"
-            style={{ 
+            style={{
               width: `${((currentSlide + 1) / slides.length) * 100}%`,
               boxShadow: '0 0 20px rgba(220, 38, 38, 0.5)'
             }}
