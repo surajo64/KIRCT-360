@@ -61,9 +61,26 @@ const International = () => {
           <h3 className="text-2xl font-semibold text-gray-800">
             West African College of Surgeons (WACS)
           </h3>
-          {/* <p className="text-gray-700 mt-2">
-            Collaboration Focus:?
-          </p> */}
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus:Training Hub for Simulation and Genomics
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            OHIO State University
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus:Joint Grant Application
+          </p>
+        </div>
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            University of Wisconsin
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus:Joint Grant Application
+          </p>
         </div>
       </div>
     </section>

@@ -21,30 +21,40 @@ const National = () => {
       <div className="max-w-8xl mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-8">
         <div className="border-l-4 border-blue-600 pl-4">
           <h3 className="text-2xl font-semibold text-gray-800">
-            National Implementation Science Alliance (NISA)
-          </h3>
-          <p className="text-gray-700 mt-2">
-            Collaboration Focus: Implementation Research and Policy Translation.
-          </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            Africa Center of Excellence in Population Health and Policy (ACEPHAP),
-            Bayero University, Kano
-          </h3>
-          <p className="text-gray-700 mt-2">
-            Collaboration Focus: Maternal and Child Health Research and Training.
-          </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
             Federal Ministry of Health, Nigeria
           </h3>
           <p className="text-gray-700 mt-2">
             Collaboration Focus: National Health Policy, Regulation, and Research
             Support.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Presidential Initiative for Unlocking the Healthcare Value Chain
+            (PVAC)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Strengthening Nigeria’s Healthcare Economy and
+            Local Manufacturing.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Nigeria Centre for Disease Control and Prevention (NCDC)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Global Health Security.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            National Institute for Cancer Research and Treatment (NICRAT)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Prevention and Treatment of Cancer.
           </p>
         </div>
 
@@ -59,6 +69,82 @@ const National = () => {
 
         <div className="border-l-4 border-blue-600 pl-4">
           <h3 className="text-2xl font-semibold text-gray-800">
+            National Biotechnology Research and Development Agency (NBRDA)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Biotechnology Research, Development, and
+            Capacity Building.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Bayero University, Kano
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Capacity Building, Genomics, and Hosting
+            National Bioinformatics workshop.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Africa Centre of Excellence in Population Health and Policy
+            (ACEPHAP)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Maternal and Child Health Research and
+            Training.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Ahmadu Bello University Teaching Hospital, SHIKA
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Healthcare Digitalization, EMR Optimization.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Ahmadu Bello University Teaching Hospital, Tudun Wada
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Healthcare Digitalization, EMR Optimization.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Renewed Hope Specialist Hospital, Zaria
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Healthcare Digitalization, EMR Optimization.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            Federal Neuropsychiatric Hospital Kware, Sokoto
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Specialized Mental Health and Psychiatric Care.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
+            National Implementation Science Alliance (NISA)
+          </h3>
+          <p className="text-gray-700 mt-2">
+            Collaboration Focus: Implementation Research and Policy Translation.
+          </p>
+        </div>
+
+        <div className="border-l-4 border-blue-600 pl-4">
+          <h3 className="text-2xl font-semibold text-gray-800">
             Kano State Ministry of Health
           </h3>
           <p className="text-gray-700 mt-2">
@@ -68,58 +154,11 @@ const National = () => {
 
         <div className="border-l-4 border-blue-600 pl-4">
           <h3 className="text-2xl font-semibold text-gray-800">
-            Kano Center for Disease Control (Kano CDC)
+            Kano Centre for Disease Control and Prevention (Kano CDC)
           </h3>
           <p className="text-gray-700 mt-2">
             Collaboration Focus: Disease Surveillance, Prevention, and Response.
           </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            EHA Clinics and E-Health Africa Foundation
-          </h3>
-          <p className="text-gray-700 mt-2">
-            Collaboration Focus: Digital Health Innovation and Healthcare Access.
-          </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            Presidential Initiative for Unlocking the Healthcare Value Chain (PVAC)
-          </h3>
-          <p className="text-gray-700 mt-2">
-            Collaboration Focus: Strengthening Nigeria’s Healthcare Economy and
-            Local Manufacturing.
-          </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            National Biotechnology Research and Development Agency (NBRDA)
-          </h3>
-          <p className="text-gray-700 mt-2">
-            Collaboration Focus: Biotechnology Research, Development, and Capacity
-            Building.
-          </p>
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            National Institute for Cancer Research and Treatment (NICRAT)
-          </h3>
-          {/* <p className="text-gray-700 mt-2">
-            Collaboration Focus:?
-          </p> */}
-        </div>
-
-        <div className="border-l-4 border-blue-600 pl-4">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            The Nigeria Centre for Disease Control and Prevention (NCDC)
-          </h3>
-          {/* <p className="text-gray-700 mt-2">
-            Collaboration Focus:?
-          </p> */}
         </div>
       </div>
     </section>
