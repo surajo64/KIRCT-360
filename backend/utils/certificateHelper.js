@@ -236,12 +236,12 @@ export const drawSignatories = (doc, pageWidth, pageHeight) => {
  * Draws the certificate ID footer
  */
 export const drawCertificateFooter = (doc, pageWidth, certificateId) => {
-    doc.fontSize(10)
+    /*doc.fontSize(10)
         .fillColor("#777")
         .text(`ID: ${certificateId}`, pageWidth - 140, 30, {
             width: 110,
             align: "right"
-        });
+        });*/
 };
 
 /**
